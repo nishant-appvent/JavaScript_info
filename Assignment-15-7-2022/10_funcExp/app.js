@@ -1,6 +1,9 @@
 // 1. factorial of a number
 
 function fact(n){
+  if((typeof n !="number")||(n<0)){
+    return "Please provide a valid number"
+  }
   if (n<=1){
   return 1;
 }
@@ -8,12 +11,18 @@ return n*fact(n-1);
 }
 
 
-console.log(fact(5));
-
+console.log(`factorial = ${fact(3)}`);
 
 // 2. fibonacci Series
 
 function fib(n){
+  if((typeof n !="number")||(n<=0)){
+    console.log("Please provide a valid number");
+  }
+  if(n==1){
+    console.log("0");
+    return ;
+  } 
   let a = 0;
   let b = 1;
   let c;
@@ -22,22 +31,23 @@ function fib(n){
     c = a + b;
     a = b;
     b = c;
-    if(i==n-2){
-      fibString += String(b);
-    }
-    else{
+
     fibString += String(b) + ", ";
-  } 
+  
   }
-  console.log(fibString);
+  console.log(`fibonacci = ${fibString.slice(0,fibString.length-2)}`);
 }
 
-fib(7);
+fib(6);
 
 
 //3. Prime Number
 
 function primeNo(n){
+  if(typeof n !="number"){
+    return "Please provide a valid number"
+  }
+  
   if (n==2){
       return true;
   }
@@ -53,48 +63,51 @@ function primeNo(n){
 }
 
 
-console.log(primeNo(19));
+console.log(`Prime number = ${primeNo(3)}`);
 
 
 // 4. Sum of two numbers
 
 function sum(a, b){
-  if ((typeof a == "number")&&(typeof b=="number")){
-    return a+b;
+  if((typeof a =="number")&&(typeof b =="number")){
+    return a +b;
   }
   return "Not a Number";
 }
 
-console.log(sum(4,7));
+console.log(`Sum is ${sum(3,7)}`);
 
 
 // 5. Multiply two numbers
 
 function mul(a, b){
-  if ((typeof a == "number")&&(typeof b=="number")){
+  if((typeof a =="number")&&(typeof b =="number")){
     return a*b;
   }
   return "Not a Number";
 }
-
-console.log(mul(4,7));
+console.log(`Multiply is ${mul(3,7)}`);
 
 
 
 // 6. Maximum in array
 
 function maxInArr(arr){
-
+  
   let max = null;
   for(let i = 0; i<arr.length; i++){
+    if(typeof (arr[i])!="number"){
+      return "Please provide a valid array."
+    }
     if((max===null)||(max<arr[i])){
+      
       max = arr[i];
     }
   }
   return max;
 }
 
-console.log(maxInArr([2,4,9,7, 1, -4, 8]))
+console.log(`Maximum of array is ${maxInArr([2,4,9,7, -4, 8])}`)
 
 
 // 7. Minimum in array 
@@ -103,6 +116,9 @@ function minInArr(arr){
 
   let min = null;
   for(let i = 0; i<arr.length; i++){
+    if(typeof (arr[i])!="number"){
+      return "Please provide a valid array."
+    }
     if((min===null)||(min>arr[i])){
       min = arr[i];
     }
@@ -110,8 +126,8 @@ function minInArr(arr){
   return min;
 }
 
-console.log(minInArr([2,4,9,7, 1, -4, 8]))
 
+console.log(`Minimum of array is ${minInArr([2,4,9,7, -4, 8])}`)
 
 // 8. Search a number in an array
 
@@ -157,56 +173,83 @@ console.log(lenArr(arr1));
 
 // 11. length of String
 function lenStr(str){
+  if(typeof str =="string"){
   let i = 0
   while(str[i]!=undefined){
     i++;
   }
   return i;
 }
+return "Argument should be string"
+}
 
-console.log(lenStr("Creed"));
+console.log(lenStr(121));
 
 
 // 12. Area of triangle
 
 function areaTriangle(a, b, c){
+  
   let s = (a+b+c)/2;
-  return (s*(s-a)*(s-b)*(s-c))**(1/2);
+  let area = (s*(s-a)*(s-b)*(s-c))**(1/2);
+  if (isNaN(area)){
+    return "Triangle not possible";
 }
 
-console.log(areaTriangle(43,34,23));
+  return area;
+}
+
+console.log(areaTriangle(71,4,2));
 
 // 13. Prime number till given number
 
 function primeNoTon(n){
+  if (typeof n != "number"){
+    
+    console.log("Please Provide a valid number");
+    return;
+  }
   let primeStr = ""
   for(let i=2; i<=n; i++){
     if(primeNo(i)){
       primeStr+= String(i) + ', ';
     }
   }
+
+  primeStr = primeStr.slice(0,primeStr.length-2);
+
   console.log(primeStr);
 }
 
-primeNoTon(100);
+primeNoTon(9);
 
 
 // 14. SquareRoot of the no
 
 function sqaurert(n){
+  if((typeof n !="number")||(n<0)){
+    
+    return "Please Provide a valid number";
+  }
   if(typeof n=="number"){
     return n**(1/2);
   }
   return "Not a number";
 }
 
-console.log(sqaurert(7));
+console.log(sqaurert(0));
 
 
 // 15. Sort an array
 
 function bubbleSort(arr){
   let n = arr.length
+  for(let i=0;i<n;i++){
+    if(typeof (arr[i])!="number"){
+      console.log("Please provide a valid array or the array will not change.");
+      return
+    }
+  }
   for(let i= 0; i<n-1; i++){
     for(let j=0; j<n-1-i; j++){
       if(arr[j]>arr[j+1]){
@@ -218,6 +261,9 @@ function bubbleSort(arr){
   }
 }
 
-const arr2 =[2,4,9,7, 1, -4, 8,0];
+const arr2 =[2,4,9,"", 1, -4, 8,0];
 bubbleSort(arr2);
 console.log(arr2)
+
+
+
