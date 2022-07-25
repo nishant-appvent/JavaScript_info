@@ -220,6 +220,155 @@
 // console.log(bigSum(A,B));
 
 
-let a = ["THIS", " IS", " AN", " Array"]
+// let a = ["THIS", " IS", " AN", " Array"]
 
-console.log(String(a));
+// console.log(String(a));
+
+
+// styles = ["Jazz ","Blues "];
+// console.log(String(styles));
+// styles.push("Rock-n-Roll ");
+// console.log(String(styles));
+// styles[1] = "Classics ";
+// console.log(String(styles));
+// styles.shift();
+// console.log(String(styles));
+// styles.unshift("Rap ", "Raggae ");
+// console.log(String(styles));
+
+
+// let arr = ["a", "b"];
+
+// arr.push(function() {
+//   console.log( this );
+// });
+
+// arr[2](); // ?
+
+
+// function getMaxSubSum(arr){
+//   let maxVal = -Infinity;
+
+//   let nowMax = 0;
+//   for(i=0;i<arr.length;i++){
+//     nowMax+= arr[i];  
+//     if(maxVal<nowMax){
+//       maxVal = nowMax;
+//     }
+//     if(nowMax<0){
+//       nowMax = 0;
+//     }
+
+//   }
+//   console.log(maxVal);
+//   return maxVal;
+// }
+
+// console.log(getMaxSubSum([-1, 2, 3, -9]) == 5);
+// console.log(getMaxSubSum([2, -1, 2, 3, -9]) == 6);
+// console.log(getMaxSubSum([-1, 2, 3, -9, 11]) == 11);
+// console.log(getMaxSubSum([-2, -1, 1, 2]) == 3);
+// console.log(getMaxSubSum([100, -9, 2, -3, 5]) == 100);
+// console.log(getMaxSubSum([1, 2, 3]) == 6);
+
+// let users = [
+//   {id: 1, name: "John"},
+//   {id: 2, name: "Pete"},
+//   {id: 3, name: "Mary"}
+// ];
+
+// // returns array of the first two users
+// let someUsers = users.filter(item => item.id < 3);
+
+// console.log(someUsers); // 2
+
+// arr = [1, -2, 15, 2, 0, 8];
+
+// arr.sort(function(a, b) {
+//   console.log( a + " <> " + b );
+//   return a - b;
+// });
+
+// console.log(arr);
+
+
+
+// let names = 'Bilbo Gandalf Nazgul';
+
+// let arr = names.split(' ');
+
+// console.log(arr);
+
+
+let army = {
+  minAge: 18,
+  maxAge: 27,
+  canJoin(user) {
+    return user.age >= this.minAge && user.age < this.maxAge;
+  }
+};
+
+// let users = [
+//   {age: 16},
+//   {age: 20},
+//   {age: 23},
+//   {age: 30}
+// ];
+
+// // find users, for who army.canJoin returns true
+// let soldiers = users.filter(army.canJoin, army);
+
+// console.log(soldiers);
+
+// function camelize(str){
+//   let arr = str.split("-");
+  
+//   for(let i = 0;i<arr.length;i++){
+//   if(i==0){
+//     continue;
+//   }
+//    arr[i] = arr[i].charAt(0).toUpperCase() + arr[i].slice(1);
+//   }
+// return arr.join("");
+// }
+
+
+
+// console.log(camelize("background-color"))
+// console.log(camelize("list-style-image") == 'listStyleImage');
+// console.log(camelize("-webkit-transition"))
+
+
+// function filterRange(arr,a,b) {
+
+//   return arr.filter((item)=>item>=a&&item<=b);
+
+// }
+
+
+// function filterRangeInPlace(arr, a, b){
+//   arr.forEach((item, index, array )=> {
+//     // console.log(arr[item])
+//     if(arr[index]<=a||arr[index]>=b){
+//     arr.splice(index,1)
+//   }
+//   });
+//   console.log(arr);
+// }
+
+// let arr = [5, 3, 8, 1];
+
+// filterRangeInPlace(arr, 1, 4);
+
+// // console.log( filtered ); // 3,1 (matching values)
+
+// console.log( arr );
+
+
+let arr = [5, 2, 1, -10, 8];
+
+// ... your code to sort it in decreasing order
+
+arr.sort((a,b)=>b-a);
+
+console.log( arr );
