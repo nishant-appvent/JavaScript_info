@@ -365,10 +365,18 @@ let army = {
 // console.log( arr );
 
 
-let arr = [5, 2, 1, -10, 8];
+// let arr = [5, 2, 1, -10, 8];
 
-// ... your code to sort it in decreasing order
+// // ... your code to sort it in decreasing order
 
-arr.sort((a,b)=>b-a);
+// arr.sort((a,b)=>b-a);
 
-console.log( arr );
+// console.log( arr );
+
+let arr = ["HTML", "JavaScript", "CSS"];
+
+let sorted = copySorted(arr);
+// to change
+
+alert( sorted ); // CSS, HTML, JavaScript
+alert( arr ); // HTML, JavaScript, CSS (no changes)
