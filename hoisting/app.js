@@ -373,10 +373,87 @@ let army = {
 
 // console.log( arr );
 
-let arr = ["HTML", "JavaScript", "CSS"];
+// let arr = ["HTML", "JavaScript", "CSS"];
 
-let sorted = copySorted(arr);
-// to change
+// let sorted = copySorted(arr);
+// // to change
 
-alert( sorted ); // CSS, HTML, JavaScript
-alert( arr ); // HTML, JavaScript, CSS (no changes)
+// alert( sorted ); // CSS, HTML, JavaScript
+// alert( arr ); // HTML, JavaScript, CSS (no changes)
+
+// let arrayLike = {
+//   0: "Hello",
+//   1: "World",
+//   length: 2
+// };
+
+// let arr = Array.from(arrayLike); // (*)
+// console.log(arr);
+
+
+
+let newMap = new Map([[1,"sdfa"],["2","throughString"],['cucumber', 500],
+['tomatoes', 350],
+['onion',    50]]);
+
+// newMap.set(1,"num1").set('1',"str1");
+
+// for(let key of newMap.keys()){
+//   console.log(`${key}----${newMap.get(key)}`);
+// }
+
+// console.log("<-------------->");
+
+// for(let value of newMap.values()){
+//   console.log(`${value}`);
+// }
+
+// console.log("<-------------->");
+
+// for(let keyValues of newMap.entries()){
+//   console.log(keyValues);
+// }
+
+// // console.log(newMap);
+
+// newMap.forEach( (value, key, map) => {
+//   console.log(`${key}: ${value}`); // cucumber: 500 etc
+// });
+
+
+// let prices = Object.fromEntries([
+//   ['banana', 1],
+//   ['orange', 2],
+//   ['meat', 4]
+// ]);
+
+// // now prices = { banana: 1, orange: 2, meat: 4 }
+
+// console.log(prices);
+
+
+// function unique(arr) {
+//   let val = new Set(arr);
+//   return String(Array.from(val));
+// }
+
+// let values = ["Hare", "Krishna", "Hare", "Krishna",
+//   "Krishna", "Krishna", "Hare", "Hare", ":-O"
+// ];
+
+// console.log( unique(values) ); // Hare, Krishna, :-O
+
+
+// let map = new Map();
+
+// map.set("name", "John");
+
+// let keys = map.keys();
+
+// console.log(keys)
+// keys = Array.from(keys);
+
+// // Error: keys.push is not a function
+// keys.push("more");
+
+// console.log(keys);
