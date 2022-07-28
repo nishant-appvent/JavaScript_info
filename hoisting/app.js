@@ -457,3 +457,22 @@ let newMap = new Map([[1,"sdfa"],["2","throughString"],['cucumber', 500],
 // keys.push("more");
 
 // console.log(keys);
+
+// import { cloneDeep } from '../node_modules/lodash-es/cloneDeep.js';
+const _ = require("lodash"); 
+
+var obj = {
+    x: "user_1",
+    address: {
+      city:"Noida",
+      country:"India"
+    }
+};
+
+var deepCopy = _.cloneDeep(obj);
+
+// deepCopy = Object.assign({},obj);
+deepCopy.address.city = "Lucknow";
+
+console.log(obj);
+console.log(deepCopy);
