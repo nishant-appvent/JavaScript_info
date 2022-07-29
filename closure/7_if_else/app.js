@@ -20,22 +20,41 @@
 
 // console.log(doublePrices);
 
-function something() {
-    var executed = false;
-    console.log("outerFunct");
-    if (!executed) {
-    return function() {
+// function something() {
+//     var executed = false;
+//     console.log("outerFunct");
+//     if (!executed) {
+//     return function() {
         
-            console.log("innerFunct")
-            executed = true;
-        }; 
-    };
-};
+//             console.log("innerFunct")
+//             executed = true;
+//         }; 
+//     };
+// };
 
-const a = something();
-a();
-a();
-a();
+// const a = something();
+// a();
+// a();
+// a();
 
+// let {height, width, title} = { title: "Menu", height: 200, width: 100 }
 
+// console.log(height);
+// console.log(width);
+// console.log(title);
+// console.log(title);
+function loadScript(src, callback) {
+    let script = document.createElement('script');
+    script.src = src;
+    script.onload = () => callback(script);
+    console.log("afiidasfuands")
+    document.head.append(script);
+  }
+  
+  loadScript('https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.2.0/lodash.js', script => {
+    console.log(`Cool, the script ${script.src} is loaded`);
+    console.log( _ ); 
+  });
+
+console.log("bro");
 

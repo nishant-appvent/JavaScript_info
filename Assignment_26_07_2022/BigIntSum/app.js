@@ -305,7 +305,18 @@
 // console.log(sumObj.sum());
 
 
+// 21. Generate Random Strings
+function generateString(n){
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+  const charCount = characters.length;
+  let newStr = "";
+  for(let i=0;i<n;i++){
+    newStr += characters.charAt(Math.floor(Math.random()*charCount));
+  }
+  return newStr;
+}
 
+console.log(generateString(5));
 
 
 
@@ -434,32 +445,32 @@
 
 
 // 30. Reversed pyramid star pattern
-function reversePyramid(n){
-  let fullString = "";
-  for(let i=n;i>=1;i--){
-    let partString = "";
-    let j=0;
-    while(j<Math.floor((n-i))){
-        partString += " ";
-        j++;
-      }
-    j= 0
-    while(j<(2*i-1)){
-      partString += "*";
-      j++;
-    }
-    j=0
-    while(j<Math.floor((n-i))){
-      partString += " ";
-      j++;
-  }
-  // console.log(partString);
-  fullString +=partString+ "\n";
-  }
-  return fullString  
-}
+// function reversePyramid(n){
+//   let fullString = "";
+//   for(let i=n;i>=1;i--){
+//     let partString = "";
+//     let j=0;
+//     while(j<Math.floor((n-i))){
+//         partString += " ";
+//         j++;
+//       }
+//     j= 0
+//     while(j<(2*i-1)){
+//       partString += "*";
+//       j++;
+//     }
+//     j=0
+//     while(j<Math.floor((n-i))){
+//       partString += " ";
+//       j++;
+//   }
+//   // console.log(partString);
+//   fullString +=partString+ "\n";
+//   }
+//   return fullString  
+// }
 
-console.log(reversePyramid(5));
+// console.log(reversePyramid(5));
 
 
 
