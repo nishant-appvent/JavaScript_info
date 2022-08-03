@@ -14,6 +14,7 @@ var Employee = function(employee){
 }
 
 
+
 // get all employees 
 Employee.getAllEmployees = (result) =>{
     dbConn.query('SELECT * FROM employees',(err,res)=>{
@@ -95,6 +96,20 @@ Employee.deleteEmployee = (id,result)=>{
     
 }
 
+Employee.loginUser = (loginData,result) =>{
+    dbConn.query('SELECT * from employees WHERE mail=? AND phone=?',[loginData.mail,loginData.phone],(err,res)=>{
+        if(err){
+            console.log("Error in login");
+            result(null,err);
+        }
+        else{
+            console.log("login successful");
+            result(null,res);
+        }
+    });
+}
+
 
 module.exports = Employee;
+
 

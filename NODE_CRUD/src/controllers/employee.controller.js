@@ -1,7 +1,13 @@
 
 // get all Employee list
 
+const Employee = require('../models/employee.model');
 const EmployeeModel = require('../models/employee.model');
+
+var User = function(userData){
+    this.mail = userData.mail;
+    this.phone = userData.phone;
+}
 
 exports.getEmployeeList = (req,res)=>{
     // console.log("All employees list");
@@ -81,3 +87,28 @@ exports.deleteEmployee = (req,res)=>{
 }
 
 
+// login user
+
+exports.loginUser = (req,res)=>{
+    console.log('login data',req.body);
+    const loginData = new User(req.body);
+    console.log('login data ',loginData)
+
+    // check null
+    if((req.body.constructor===Object) && (Object.keys(req.body).length===0)){
+        res.send(400).send({success:false,message:"Please fill all fields"});
+    }
+    else{
+        console.log("valid data for login");
+        EmployeeModel.loginUser(loginData,(err,employee)=>{
+            if(err)
+                res.send(err);
+            if(Object.keys(employee).length){
+                res.json({data:employee,message:'login successful'});
+            }
+            else{
+                res.json({message:"Login Failed"});
+            }  
+        })
+    }
+}

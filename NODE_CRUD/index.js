@@ -20,11 +20,16 @@ app.get('/',(req,res)=>{
     res.send('Hello World');
 });
 
+// app.get('/login',(req,res)=>{
+//     res.send('You are logged in');
+// })
 // import employee routes
 const employeeRoutes = require('./src/routes/employee.route');
+const loginRoutes = require('./src/routes/login.route');
 
 // create employee routes
 app.use('/api/v1/employee',employeeRoutes);
+app.use('/api/v1/login',loginRoutes);
 
 // listen to the port
 app.listen(port,()=>{
