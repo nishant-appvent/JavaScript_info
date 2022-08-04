@@ -1,7 +1,7 @@
 
 // get all Employee list
 
-const Employee = require('../models/employee.model');
+const e = require('express');
 const EmployeeModel = require('../models/employee.model');
 
 var User = function(userData){
@@ -11,14 +11,15 @@ var User = function(userData){
 
 exports.getEmployeeList = (req,res)=>{
     // console.log("All employees list");
-    EmployeeModel.getAllEmployees((err,employees)=>{
+    let callback = (err,employees)=>{
         console.log("We are here.");
         if(err) 
         res.send(err);
         console.log('Employees',employees);
         res.send(employees);
 
-    })
+    };
+    EmployeeModel.getAllEmployees(callback);
 }
 
 
@@ -50,7 +51,13 @@ exports.createNewEmployee = (req,res)=>{
         EmployeeModel.createEmployee(employeeReqData,(err,employee)=>{
             if(err)
                 res.send(err);
-                res.json({status:true,message:'Employee added successfully',data: employee})  
+                console.log(employee);
+                if(Object.keys(employee).length===1)
+                 {res.json({status:false,message:'User already exist'});
+                    }
+                else{
+                res.json({status:true,message:'Employee added successfully',data: employee}) 
+            } 
         })
     }
 }

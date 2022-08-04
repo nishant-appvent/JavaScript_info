@@ -45,15 +45,24 @@ Employee.getEmployeeByID = (id,result)=>{
 
 // create new employee
 Employee.createEmployee = (employeeReqData,result)=>{
-    dbConn.query(' INSERT INTO employees SET ? ',employeeReqData,(err,res)=>{
-        if(err){
-            console.log('Error while inserting data');
-            result(null,err);
-        }else{
-            console.log('Employee added successfully');
-            result(null,res)
-        }
+    dbConn.query('SELECT mail FROM employees where mail=?',[employeeReqData.mail],(err,res)=>{
+        console.log("-----------------",res);
+        if(res.length===0){
+            dbConn.query(' INSERT INTO employees SET ? ',employeeReqData,(err,res)=>{
+            if(err){
+                console.log('Error while inserting data');
+                result(null,err);
+            }else{
+                console.log('Employee added successfully');
+                result(null,res)
+            }
+        })
+    }
+    else{
+        console.log('User already exists');
+        result(null,res);}
     })
+    
 }
 
 // update employee
