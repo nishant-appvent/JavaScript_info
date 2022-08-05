@@ -6,7 +6,7 @@ const employeeController = require('../controllers/employee.controller');
 
 // get all employees
 
-router.get('/',employeeController.loginUser);
+router.post('/',employeeController.loginUser);
 
 // // get employee by ID
 

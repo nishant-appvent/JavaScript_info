@@ -31,6 +31,7 @@ Employee.getAllEmployees = (result) =>{
 
 // get employee by ID from DB
 
+// Employee.getEmployeeByID = (id)=>{
 Employee.getEmployeeByID = (id,result)=>{
     dbConn.query('SELECT * FROM employees WHERE id=?',id,(err,res)=>{
         if(err){
@@ -40,6 +41,8 @@ Employee.getEmployeeByID = (id,result)=>{
         else{
             result(null,res);
         }
+        // console.log(res);
+        // return res;
     })
 }
 
