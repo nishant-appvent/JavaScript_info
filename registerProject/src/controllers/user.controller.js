@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 // get all Employee list
+const jwt = require("jsonwebtoken");
 
 const e = require('express');
 const UserModel = require('../models/user.model');
@@ -27,12 +28,14 @@ UserInController.registerUser = (req,res)=>{
         UserModel.registerUser(regData,(err,user)=>{
             if(err)
                 res.send(err);
-                console.log(user);
+                console.log(user[0]);
+                console.log(Object.keys(user))
                 if(Object.keys(user).length===1)
-                 {res.json({status:false,message:'User already exist'});
+                 {res.json({status:false,message:user[0].message});
                     }
                 else{
-                res.json({status:true,message:'User added successfully',data: user}) 
+                    
+                res.json({status:true,message:'User registered successfully',data: user}) 
             } 
         })
     }
@@ -49,17 +52,18 @@ UserInController.loginUser = (req,res)=>{
     }
     else{
         console.log("valid data");
-        UserModel.loginUser(loginData,(err,dbPassword)=>{
+        UserModel.loginUser(loginData,(err,loginRes)=>{
             if(err)
                 res.send(err);
-            else if (dbPassword==="Not Found"){
+            else if (loginRes.password==="Not Found"){
                 res.json({status:"Not Found",message:"User isn't registered"});``
             }
             else{
-            bcrypt.compare(loginData.password,dbPassword,(err,check)=>{
+            bcrypt.compare(loginData.password,loginRes.password,(err,check)=>{
                 if(check){
-                    console.log("Password matched")
-                    res.json({status:true,message:"Login successful"})
+                    console.log("Password matched");
+                    const token = jwt.sign({id:loginRes.id},"secret_key");
+                    res.json({status:true,message:"Login successful",token:token})
                 }
                 else{
                     console.log("Password not matched")
@@ -72,6 +76,7 @@ UserInController.loginUser = (req,res)=>{
 
 
 UserInController.personalDet = (req,res)=>{
+    
     const personalDetails = req.body;
     console.log(personalDetails);
     // check null
@@ -80,7 +85,7 @@ UserInController.personalDet = (req,res)=>{
     }
     else{
         console.log("valid data");
-        UserModel.personalDet(req.params.id,personalDetails,(err,personal)=>{
+        UserModel.personalDet(req.id,personalDetails,(err,personal)=>{
             if(err)
                 res.send(err);
                 res.json({status:true,message:'Personal details inserted'})  
@@ -91,14 +96,14 @@ UserInController.personalDet = (req,res)=>{
 
 UserInController.addressDet = (req,res)=>{
     const addressDetails = req.body;
-    console.log(personalDetails);
+    console.log(addressDetails);
     // check null
     if((req.body.constructor===Object) && (Object.keys(req.body).length===0)){
         res.send(400).send({success:false,message:"Please fill all fields"});
     }
     else{
         console.log("valid data");
-        UserModel.addressDet(req.params.id,addressDetails,(err,personal)=>{
+        UserModel.addressDet(req.id,addressDetails,(err,personal)=>{
             if(err)
                 res.send(err);
                 res.json({status:true,message:'Address details inserted'})  
@@ -116,12 +121,22 @@ UserInController.degreeDet = (req,res)=>{
     }
     else{
         console.log("valid data");
-        UserModel.degreeDet(req.params.id,degreeDetails,(err,personal)=>{
+        UserModel.degreeDet(req.id,degreeDetails,(err,personal)=>{
             if(err)
                 res.send(err);
                 res.json({status:true,message:'Degree details inserted'})  
         })
     }
+}
+
+UserInController.getUser = (req,res)=>{
+    let userId = req.id;
+    UserModel.getUser( userId,(err,userData)=>{
+        if(err) 
+        res.send(err);
+        console.log('Employees',userData);
+        res.json({UserData:userData[0]});
+    })
 }
 
 

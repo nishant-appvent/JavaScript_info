@@ -21,21 +21,18 @@ exports.getEmployeeList = (req,res)=>{
 
 // get employee by id
 
-exports.getEmployeeByID =(req,res)=>{
-    console.log("get Emp by id");
-    EmployeeModel.getEmployeeByID(req.params.id,(err,employee)=>{
-        if(err)
-        res.send(err);
-        console.log('Single employee data',employee);
-        res.send(employee);
-    })
-
-    // let val = await EmployeeModel.getEmployeeByID(req.params.id)
-    
-   
-    // console.log("wertyuiugfgh",val);
-    // res.send(data);
-        
+exports.getEmployeeByID = async (req, res) => {
+    try {
+        console.log("get Emp by id");
+        const empData = await EmployeeModel.getEmployeeByID(req.params.id);
+        if (!empData) {
+            res.status(404).json({message: "User not found"});
+        }
+        res.status(200).json({message: "Employee data fetched successfully", data: empData});
+    } 
+    catch (err) {
+        res.status(500).json({message: "Internal server error"});
+    }
 }
 
 // create new employee

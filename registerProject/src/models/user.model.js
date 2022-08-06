@@ -4,22 +4,33 @@ var UserModel = function () {};
 
 UserModel.registerUser = (regData, result) => {
   dbConn.query(
-    "SELECT email FROM USERDATA where email=?",
-    [regData.email],
+    "SELECT email,phone FROM USERDATA where email=? or phone=?",
+    [regData.email, regData.phone],
     (err, res) => {
       console.log("-----------------", res);
       if (res.length === 0) {
-        dbConn.query(" INSERT INTO USERDATA SET ? ", regData, (err, res) => {
-          if (err) {
-            console.log("Error while inserting data");
-            result(null, err);
-          } else {
-            console.log("User added successfully");
-            result(null, res);
+        dbConn.query(
+          " INSERT INTO USERDATA SET ?,step=1 ",
+          regData,
+          (err, res) => {
+            if (err) {
+              console.log("Error while inserting data");
+              result(null, err);
+            } else {
+              console.log("User added successfully");
+              result(null, res);
+            }
           }
-        });
+        );
       } else {
-        console.log("User already exists");
+        let alreadyExistMes = "";
+        if (res[0].email === regData.email)
+          alreadyExistMes = "Email Already Exists";
+        else if (res[0].phone === regData.phone)
+          alreadyExistMes = "Phone Already Exists";
+        console.log(alreadyExistMes, "==========");
+        res[0].message = alreadyExistMes;
+        console.log(res);
         result(null, res);
       }
     }
@@ -27,22 +38,25 @@ UserModel.registerUser = (regData, result) => {
 };
 
 UserModel.loginUser = (loginData, result) => {
-  let emailOrPhone = null;
-  if (loginData.email) emailOrPhone = { email: loginData.email };
-  else if (loginData.phone) emailOrPhone = { phone: loginData.phone };
+  let emailorPhone = loginData.email;
   dbConn.query(
-    "SELECT email,phone,password FROM USERDATA where ?",
-    emailOrPhone,
-    (err, res) => {
+    "SELECT id,email,phone,password FROM USERDATA where email=? or phone=?",
+    [emailorPhone, emailorPhone],
+    (err, res) => {      // console.log(res);
+      // console.log(res[0].email);
+      // console.log(res[0].phone);
+      // console.log(regData.email);
+      // console.log(regData.phone);
+
       console.log(res);
       if (res.length === 0) {
         result(null, "Not Found");
       } else {
-        const dbPassword = res[0].password;
+        const loginRes = res[0];
         if (err) {
           result(null, err);
         } else {
-          result(null, dbPassword);
+          result(null, loginRes);
         }
       }
     }
@@ -52,7 +66,7 @@ UserModel.loginUser = (loginData, result) => {
 UserModel.personalDet = (id, personalDetails, result) => {
   console.log(personalDetails);
   dbConn.query(
-    "UPDATE USERDATA SET NAME=?,AGE=?,gender=? WHERE id=?",
+    "UPDATE USERDATA SET NAME=?,AGE=?,gender=?,step=2 WHERE id=?",
     [personalDetails.name, personalDetails.age, personalDetails.gender, id],
     (err, res) => {
       if (err) {
@@ -66,15 +80,14 @@ UserModel.personalDet = (id, personalDetails, result) => {
   );
 };
 
-
 UserModel.addressDet = (id, addressDetails, result) => {
   console.log(addressDetails);
   let addressStr = "";
-  for(let i in addressDetails){
-    addressStr+= " | " + i;
+  for (let i in addressDetails) {
+    addressStr += addressDetails[i] + " | ";
   }
   dbConn.query(
-    "UPDATE USERDATA SET address=?, WHERE id=?",
+    "UPDATE USERDATA SET address=?, step=3 WHERE id=?",
     [addressStr, id],
     (err, res) => {
       if (err) {
@@ -91,8 +104,8 @@ UserModel.addressDet = (id, addressDetails, result) => {
 UserModel.degreeDet = (id, degreeDetails, result) => {
   console.log(degreeDetails);
   dbConn.query(
-    "UPDATE USERDATA SET degree=?,year=? WHERE id=?",
-    [degreeDetails.degree,degreeDetails.year, id],
+    "UPDATE USERDATA SET degree=?,year=?,step=0 WHERE id=?",
+    [degreeDetails.degree, degreeDetails.year, id],
     (err, res) => {
       if (err) {
         console.log("Error While inserting degree details");
@@ -103,6 +116,18 @@ UserModel.degreeDet = (id, degreeDetails, result) => {
       }
     }
   );
+};
+
+UserModel.getUser = (userId,result) => {
+  dbConn.query("SELECT step,email,phone,name,age,gender,address,degree,year FROM USERDATA where id=?",userId, (err, res) => {
+    if (err) {
+      console.log("Error while fetching User's data", err);
+      result(null, err);
+    } else {
+      console.log("User data fetched successfully");
+      result(null, res);
+    }
+  });
 };
 
 module.exports = UserModel;
