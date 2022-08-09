@@ -35,7 +35,7 @@ Employee.getAllEmployees = (result) => {
 // } catch (error) {
 //     return error
 // }
-Employee.getEmployeeByID = (id, result) => {
+Employee.getEmployeeByID = (id) => {
   return new Promise((resolve, reject) => {
     dbConn.query("SELECT * FROM employees WHERE id=?", id, (err, response) => (err) ? reject(err) : resolve(response));
   });

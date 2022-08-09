@@ -1,13 +1,15 @@
 const bcrypt = require('bcrypt');
-// get all Employee list
 const jwt = require("jsonwebtoken");
 
 const e = require('express');
 const UserModel = require('../models/user.model');
+const { on } = require('../../config/db.config');
 
 
 var UserInController = function(){
 }
+
+
 
 UserInController.registerUser = (req,res)=>{
     // res.send("you are on registration page");
@@ -17,9 +19,7 @@ UserInController.registerUser = (req,res)=>{
     const salt = bcrypt.genSaltSync(10);
     regData.password = bcrypt.hashSync(regData.password,salt);
     console.log(regData);
-    
 
-    // // check null
     if((regData.constructor===Object) && (Object.keys(req.body).length===0)){
         res.status(400).send({success:false,message:"Please fill all fields"});
     }
@@ -33,20 +33,19 @@ UserInController.registerUser = (req,res)=>{
                 if(Object.keys(user).length===1)
                  {res.json({status:false,message:user[0].message});
                     }
-                else{
-                    
+                else{     
                 res.json({status:true,message:'User registered successfully',data: user}) 
             } 
         })
     }
 }
 
+
 UserInController.loginUser = (req,res)=>{
     console.log("Login Page");
     const loginData = (req.body);
     console.log('Email Password Raw data',loginData);
 
-    // // check null
     if((loginData.constructor===Object) && (Object.keys(req.body).length===0)){
         res.status(400).send({success:false,message:"Please fill all fields"});
     }
@@ -63,7 +62,8 @@ UserInController.loginUser = (req,res)=>{
                 if(check){
                     console.log("Password matched");
                     const token = jwt.sign({id:loginRes.id},"secret_key");
-                    res.json({status:true,message:"Login successful",token:token})
+                    delete loginRes.password;
+                    res.json({status:true,message:"Login successful",yourData:loginRes,token:token})
                 }
                 else{
                     console.log("Password not matched")
@@ -75,11 +75,9 @@ UserInController.loginUser = (req,res)=>{
 }
 
 
-UserInController.personalDet = (req,res)=>{
-    
+UserInController.personalDet = (req,res)=>{    
     const personalDetails = req.body;
     console.log(personalDetails);
-    // check null
     if((req.body.constructor===Object) && (Object.keys(req.body).length===0)){
         res.send(400).send({success:false,message:"Please fill all fields"});
     }
@@ -88,13 +86,15 @@ UserInController.personalDet = (req,res)=>{
         UserModel.personalDet(req.id,personalDetails,(err,personal)=>{
             if(err)
                 res.send(err);
-                res.json({status:true,message:'Personal details inserted'})  
+                const yourData = personal[0];
+                delete yourData.password;
+                res.json({status:true,message:'Personal details inserted',yourData:yourData})  
         })
     }
 }
 
 
-UserInController.addressDet = (req,res)=>{
+UserInController.addressDet = async (req,res)=>{
     const addressDetails = req.body;
     console.log(addressDetails);
     // check null
@@ -103,16 +103,23 @@ UserInController.addressDet = (req,res)=>{
     }
     else{
         console.log("valid data");
-        UserModel.addressDet(req.id,addressDetails,(err,personal)=>{
-            if(err)
-                res.send(err);
-                res.json({status:true,message:'Address details inserted'})  
-        })
+        try{
+        const address = await UserModel.addressDet(req.id,addressDetails);
+        if(!address){
+            res.status(404).json({message:"Failed"});
+        }
+        delete address[0].password;
+        res.status(200).json({status:true,message:'Address details inserted',yourData:address[0]});
+    }
+    catch(err){
+        res.status(500).json({message: "Internal server error"});
+    }
+
     }
 }
 
 
-UserInController.degreeDet = (req,res)=>{
+UserInController.degreeDet = async (req,res)=>{
     const degreeDetails = req.body;
     console.log(degreeDetails);
     // check null
@@ -121,13 +128,20 @@ UserInController.degreeDet = (req,res)=>{
     }
     else{
         console.log("valid data");
-        UserModel.degreeDet(req.id,degreeDetails,(err,personal)=>{
-            if(err)
-                res.send(err);
-                res.json({status:true,message:'Degree details inserted'})  
-        })
+        try{
+        const degree=await UserModel.degreeDet(req.id,degreeDetails);
+        if(!degree){
+            res.status(404).json({message:"Failed"});
+        }
+        delete degree[0].password;
+        res.status(200).json({status:true,message:"Degree details inserted",yourData:degree[0]})
+    }
+    catch(err){
+        res.status(500).json({message: "Internal server error"});
     }
 }
+}
+
 
 UserInController.getUser = (req,res)=>{
     let userId = req.id;
@@ -140,5 +154,80 @@ UserInController.getUser = (req,res)=>{
 }
 
 
+UserInController.getAllUser = async (req,res)=>{
+    let adminId = req.id;
+    console.log(adminId);
+    try{
+    const allUserData = await UserModel.getAllUsers(adminId);
+    if(!allUserData){
+        res.status(404).json({message:"Failed"});
+    }
+    else if(allUserData==="NotAdmin"){
+        res.status(200).json({message:"Access Denied"});
+    }
+    else{
+        let onBoarded = 0;
+        let remaining = 0;
+        for(let i of allUserData){
+            delete i.password;
+            if(i.step===0){
+                onBoarded += 1;
+            }
+            else{
+                remaining += 1;
+            }
+        }
+    res.status(200).json({status:true,message:"All users data Fetched",Onboarded:onBoarded,DetailsPending:remaining,AllUsersData:allUserData})
+    }
+    }
+    catch(err){
+        res.status(500).json({message:"Internal Server Error"});
+    }
+}
+
+
+UserInController.sendOtp = async (req,res)=>{
+    const email = req.body;
+    console.log(email);
+    // check null
+    if((req.body.constructor===Object) && (Object.keys(req.body).length===0)){
+        res.send(400).send({success:false,message:"Please fill all fields"});
+    }
+    else{
+        console.log("valid data");
+        try{
+        const otpSent=await UserModel.saveOtp(email);
+        console.log(otpSent);
+        if(!otpSent){
+            res.status(404).json({message:"Failed"});
+        }
+        res.status(200).json({status:true,message:otpSent})
+    }
+    catch(err){
+        res.status(500).json({message: "Internal server error"});
+    }
+}
+}
+
+UserInController.verifyOtp = async (req,res)=>{
+    const receivedOtp = req.body.otp;
+    if((req.body.constructor===Object) && (Object.keys(req.body).length===0)){
+        res.send(400).send({success:false,message:"Please fill all fields"});
+    }
+    else{
+        console.log("valid data");
+        try{
+        const otpReceived=await UserModel.verifyOtp(req.id,receivedOtp);
+        console.log(otpReceived);
+        if(!otpReceived){
+            res.status(404).json({message:"Failed"});
+        }
+        res.status(200).json({status:true,message:otpReceived})
+    }
+    catch(err){
+        res.status(500).json({message: "Internal server error"});
+    }
+}
+}
 
 module.exports = UserInController;

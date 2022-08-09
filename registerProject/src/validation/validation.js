@@ -54,8 +54,7 @@ const validationAddress =(req,res,next)=>{
 }
 const validationDegree =(req,res,next)=>{
     const schema = Joi.object().keys({
-        degree:Joi.string().required(),
-        year: Joi.number().required(),
+        degree:Joi.string().required()
     })
     const {error} = schema.validate(req.body ,{abortEarly: false});
     if(error){

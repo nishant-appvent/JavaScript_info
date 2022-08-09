@@ -306,8 +306,10 @@
 
 
 // 21. Generate Random Strings
-function generateString(n){
-  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+function generateString(){
+  // const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+  let n=4;
+  const characters = "1234567890";
   const charCount = characters.length;
   let newStr = "";
   for(let i=0;i<n;i++){
@@ -316,7 +318,7 @@ function generateString(n){
   return newStr;
 }
 
-console.log(generateString(5));
+console.log(generateString());
 
 
 

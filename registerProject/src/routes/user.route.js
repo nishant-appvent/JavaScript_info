@@ -15,5 +15,8 @@ router.put('/login/personal',valid.validationPer,auth.authorization,UserControll
 router.put('/login/personal/address',valid.validationAddress,auth.authorization,UserController.addressDet);
 router.put('/login/personal/address/degree',valid.validationDegree,auth.authorization,UserController.degreeDet);
 router.get('/login/dashboard',auth.authorization,UserController.getUser);
+router.get('/getallusers',auth.authorization,UserController.getAllUser);
+router.post('/sendOtp',auth.authorization,UserController.sendOtp);
+router.post('/verifyotp',auth.authorization,UserController.verifyOtp);
 
 module.exports = router;

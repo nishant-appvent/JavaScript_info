@@ -1,11 +1,10 @@
 
 const jwt = require('jsonwebtoken');
 const authorize = {
-    authentication:(req,res,next)=>{
-        let token = req.headers.authorization;
+    authorization:(req,res,next)=>{
         if(token){
             token = token.split(" ")[1];
-            jwt.verify(token,"secret_reg_key",(err,decoded)=>{
+            jwt.verify(token,"secret_key",(err,decoded)=>{
                 console.log(err);
                 if(err){
                     return res.json({
@@ -13,8 +12,7 @@ const authorize = {
                         message:`Invalid token or unauthorised access`
                     })
                 }
-                console.log(decoded.id,'---------------');
-                console.log(decoded,'<--------------->');
+                console.log("id in token  : ", decoded.id)
                 req.id = decoded.id;
                 next();
             })
