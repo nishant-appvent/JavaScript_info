@@ -63,6 +63,7 @@ UserInController.loginUser = (req,res)=>{
                     console.log("Password matched");
                     const token = jwt.sign({id:loginRes.id},"secret_key");
                     delete loginRes.password;
+                    delete loginRes.otp;
                     res.json({status:true,message:"Login successful",yourData:loginRes,token:token})
                 }
                 else{
@@ -88,6 +89,7 @@ UserInController.personalDet = (req,res)=>{
                 res.send(err);
                 const yourData = personal[0];
                 delete yourData.password;
+                delete yourData.otp;
                 res.json({status:true,message:'Personal details inserted',yourData:yourData})  
         })
     }
@@ -109,6 +111,7 @@ UserInController.addressDet = async (req,res)=>{
             res.status(404).json({message:"Failed"});
         }
         delete address[0].password;
+        delete address[0].otp;
         res.status(200).json({status:true,message:'Address details inserted',yourData:address[0]});
     }
     catch(err){
@@ -134,6 +137,7 @@ UserInController.degreeDet = async (req,res)=>{
             res.status(404).json({message:"Failed"});
         }
         delete degree[0].password;
+        delete degree[0].otp;
         res.status(200).json({status:true,message:"Degree details inserted",yourData:degree[0]})
     }
     catch(err){
@@ -170,6 +174,7 @@ UserInController.getAllUser = async (req,res)=>{
         let remaining = 0;
         for(let i of allUserData){
             delete i.password;
+            delete i.otp;
             if(i.step===0){
                 onBoarded += 1;
             }
@@ -228,6 +233,23 @@ UserInController.verifyOtp = async (req,res)=>{
         res.status(500).json({message: "Internal server error"});
     }
 }
+}
+
+UserInController.sendPost = async (req,res)=>{
+    const userId = req.id;
+    const postBody = req.body; 
+    console.log("-----")
+    try{
+        const postRes = await UserModel.sendPost(userId,postBody);
+        console.log(postRes);
+        if(!postRes){
+            res.status(404).json({message:"Failed"});
+        }
+        res.status(200).json({message:postRes});
+    }
+    catch(err){
+        res.status(500).json({message: "Internal server error"});
+    }
 }
 
 module.exports = UserInController;

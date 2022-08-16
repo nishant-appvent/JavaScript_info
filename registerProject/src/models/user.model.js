@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const dbConn = require("../../config/db.config");
 const nodeMailer = require("../nodeMailer/nodeMailer");
 
-
 let OTP = function generateOtp() {
   //   // const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
   let n = 4;
@@ -251,9 +250,10 @@ UserModel.saveOtp = (passedEmail) => {
           } else {
             let genOTP = OTP();
             resolve(genOTP);
-            nodeMailer.senOTP(genOTP,passedEmail.email);
-            const token = jwt.sign({otp:genOTP},"OTP_key",
-            {expiresIn:"120s"});
+            nodeMailer.senOTP(genOTP, passedEmail.email);
+            const token = jwt.sign({ otp: genOTP }, "OTP_key", {
+              expiresIn: "120s",
+            });
             dbConn.query(
               "UPDATE USERDATA SET otp=? where email=?",
               [token, passedEmail.email],
@@ -286,53 +286,80 @@ UserModel.verifyOtp = (userId, receivedOtp) => {
           reject(err);
         } else {
           let token = response[0].otp;
-          try{
-          jwt.verify(token,"OTP_key",(err,decoded)=>{
-            console.log(err);
-            if(err){
-              console.log("Error in decoding token");
-              resolve(err);
-            }
-            else{
-            console.log(receivedOtp);
-            console.log("otp in token  : ", decoded.otp)
-            if( receivedOtp!==decoded.otp){
-              let message = "Wrong Otp";
-              console.log("Wrong Otp");
-              resolve(message);
-            }
-            else{
-              console.log("Verfied sent");
-              resolve("otp Verified");          
+          try {
+            jwt.verify(token, "OTP_key", (err, decoded) => {
+              // console.log(err);
+
+              if (err) {
+                try {
+                  console.log("Error in decoding token");
+                  throw err;
+                } catch (err) {
+                  console.log("here because jwt expired");
+                  resolve("otp expired");
+                }
+              } else {
+                console.log(receivedOtp);
+                console.log("otp in token  : ", decoded.otp);
+                if (receivedOtp !== decoded.otp) {
+                  let message = "Wrong Otp";
+                  console.log("Wrong Otp");
+                  resolve(message);
+                } else {
+                  console.log("Verfied");
+                  dbConn.query(
+                    "UPDATE USERDATA SET status=1 where id =?",
+                    userId,
+                    (err, response) => {
+                      if(err){
+                        console.log("error in updating status");
+                        reject(err);
+                      }
+                      else{
+                        console.log("ho gya verify")
+                      resolve("otp Verified");}
+                    }
+                  );
+                }
               }
-            
+            });
+          } catch (err) {
+            resolve("OTP expired");
           }
-        })
-      }catch(err){
-        console
-        resolve()
+        }
       }
+    );
+  });
+};
+
+
+UserModel.sendPost = async (userId,postBody)=>{
+  return new Promise((resolve,reject)=>{
+    
+    dbConn.query(`SELECT status from USERDATA where id = ${userId}`,(err,statusObj)=>{
+      if (err) {
+        console.log(err);
+        console.log("Error while fetching data");
+        reject(err);}
+      else if (statusObj[0].status !== 1 ){
+        resolve("User not verified");
+      }else{
+        dbConn.query(` INSERT INTO posts SET userid=?,?`,[userId,postBody],(err,response)=>{
+          if(err){
+            console.log(err);
+            console.log("error in saving post");
+            reject(err);
+          }
+          else{
+          console.log("post done");
+          resolve(`Post Saved at id = ${response.insertId}`);
+          }
+        });
       }
-    })})}
-          // console.log("_______----",response[0].otp);
-          // console.log("_______----",receivedOtp.otp);
-          // if (response[0].otp !== receivedOtp.otp) {
-          //   let message = "Wrong Otp";
-          //   console.log("Wrong Otp");
-          //   resolve(message);
-          // } else {
-          //   dbConn.query(
-          //     "UPDATE USERDATA SET status=1,otp=-1 where id=?",
-          //     [userId],
-          //     (err, finalRes) => {
-          //       if (err) {
-          //         console.log("Error changin status");
-          //         reject(err);
-          //       } else {
-          //         console.log("Verfied sent");
-          //         resolve("otp Verified");
-          //       }
-          // })
-  
+    })
+    
+  })
+
+}
 
 module.exports = UserModel;
