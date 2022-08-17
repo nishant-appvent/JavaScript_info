@@ -159,10 +159,15 @@ UserInController.getUser = (req,res)=>{
 
 
 UserInController.getAllUser = async (req,res)=>{
-    let adminId = req.id;
+    const adminId = req.id;
+    const limit = 5;
+    const page = req.query.page;
+    let offset = 0;
+    if(page) {
+    offset = (page-1)*limit;}
     console.log(adminId);
     try{
-    const allUserData = await UserModel.getAllUsers(adminId);
+    const allUserData = await UserModel.getAllUsers(adminId,limit,offset);
     if(!allUserData){
         res.status(404).json({message:"Failed"});
     }
@@ -193,6 +198,7 @@ UserInController.getAllUser = async (req,res)=>{
 
 UserInController.sendOtp = async (req,res)=>{
     const email = req.body;
+    const id = req.id;
     console.log(email);
     // check null
     if((req.body.constructor===Object) && (Object.keys(req.body).length===0)){
@@ -201,7 +207,7 @@ UserInController.sendOtp = async (req,res)=>{
     else{
         console.log("valid data");
         try{
-        const otpSent=await UserModel.saveOtp(email);
+        const otpSent=await UserModel.saveOtp(id,email);
         console.log(otpSent);
         if(!otpSent){
             res.status(404).json({message:"Failed"});
@@ -249,6 +255,21 @@ UserInController.sendPost = async (req,res)=>{
     }
     catch(err){
         res.status(500).json({message: "Internal server error"});
+    }
+}
+
+UserInController.watchPost = async (req,res)=>{
+    const userId  = req.id;
+    try{
+        const postResponse = await UserModel.watchPost(userId);
+        console.log(postResponse);
+        if(!postResponse){
+            res.status(404).json({message:"Failed"});
+        }
+        res.status(200).json({message:postResponse});
+    }
+    catch(err){
+        res.status(500).json({message:"Internal Server Error"});
     }
 }
 
