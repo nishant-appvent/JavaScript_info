@@ -274,3 +274,4 @@ UserInController.watchPost = async (req,res)=>{
 }
 
 module.exports = UserInController;
+module.exports = UserInController
