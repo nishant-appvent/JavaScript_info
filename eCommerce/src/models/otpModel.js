@@ -1,7 +1,6 @@
 
 module.exports = (sequelize,DataTypes)=>{
     const OTP = sequelize.define("otpTable",{
-        
         email:{
             type:DataTypes.STRING,
             allowNull:false
@@ -11,11 +10,14 @@ module.exports = (sequelize,DataTypes)=>{
             type:DataTypes.STRING,
             allowNull:false
         },
-        updatedAt:{
+        setAt:{
             type:DataTypes.STRING,
             defaultValue: Math.floor(Date.now()/1000),
         }
        
+    },{
+        updatedAt:false,
+        createdAt:false
     });
     return OTP;
 }

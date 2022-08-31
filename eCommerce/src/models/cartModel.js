@@ -1,41 +1,33 @@
 
 module.exports = (sequelize,DataTypes)=>{
-    const Products = sequelize.define("Product",{
-        pname:{
-            type:DataTypes.STRING,
-            allowNull:false
-        },
-        description:{
-            type:DataTypes.STRING,
-            allowNull:false
-        },
-        stock:{
-            type:DataTypes.INTEGER,
-            defaultValue:0,
-            allowNull:false,
-        },
+    const Cart = sequelize.define("Cart",{
         price:{
             type:DataTypes.FLOAT,
             allowNull:false
         },
-        discount:{
-            type:DataTypes.INTEGER,
-            allowNull:true
-        }, 
+        discountPercent:{
+            type:DataTypes.FLOAT,
+            defaultValue:0,
+            allowNull:false
+        },
         discountedPrice:{
             type:DataTypes.FLOAT,
-            allowNull:true
+            allowNull:false
+        },
+        quantity:{
+            type:DataTypes.INTEGER,
+            allowNull:false,
         },
         status:{
             type:DataTypes.INTEGER,
-            defaultValue:1,
+            defaultValue:0,
             allowNull:false
         }
     },{
-        updatedAt:true,
-        createdAt:true
+        updatedAt:false,
+        createdAt:false
     });
-    return Products;
+    return Cart;
 }
         
     // },

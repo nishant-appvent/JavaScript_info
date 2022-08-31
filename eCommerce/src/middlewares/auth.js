@@ -36,7 +36,7 @@ adminLoginJWT = (req, res, next) => {
         });
       }
       console.log("id in token  : ", decoded.id);
-      req.customerId = decoded.id;
+      req.id = decoded.id;
       next();
     });
   } else {
@@ -60,7 +60,7 @@ userLoginJWT = (req, res, next) => {
         });
       }
       console.log("id in token  : ", decoded.id);
-      req.customerId = decoded.id;
+      req.id = decoded.id;
       next();
     });
   } else {
@@ -85,7 +85,7 @@ merchantLoginJWT = (req, res, next) => {
           });
         }
         console.log("id in token  : ", decoded.id);
-        req.merchantId = decoded.id;
+        req.id = decoded.id;
         next();
       });
     } else {

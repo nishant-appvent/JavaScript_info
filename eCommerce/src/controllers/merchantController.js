@@ -19,14 +19,11 @@ merchantReg = async (req, res) => {
         Merchants.create(Merchant)
           .then((merchantData) => {
             console.log(merchantData.dataValues);
-            res
-              .status(200)
-              .json({
-                status: true,
-                message:
-                  "request sent to admin, wait for password setting mail",
-                merchantData: merchantData.dataValues,
-              });
+            res.status(200).json({
+              status: true,
+              message: "request sent to admin, wait for password setting mail",
+              merchantData: merchantData.dataValues,
+            });
           })
           .catch((err) => {
             console.log(
@@ -81,10 +78,9 @@ merchantLogin = async (req, res) => {
       return res
         .status(404)
         .json({ message: "Merchant verification not complete" });
-    }
-    else if(merchantData.status===-1){
-      console.log("merchant blocked")
-      return res.status(404).json({message:"Merchant has been blocked"})
+    } else if (merchantData.status === -1) {
+      console.log("merchant blocked");
+      return res.status(404).json({ message: "Merchant has been blocked" });
     }
 
     bcrypt.compare(password, merchantData.password, (err, check) => {
@@ -112,37 +108,47 @@ addProduct = (req, res) => {
   const subCategory = req.body.subCategory;
   const pname = req.body.pname;
   const price = req.body.price;
-  let merchantId = 13;
-  if (req.merchantId) {
-    merchantId = req.merchantId;
-  }
+  const stock = req.body.stock;
+  const discount = req.body.discount;
+  const discountedPrice = price - ((discount*price)/100);
+  const description = req.body.description;
+  let merchantId = req.id;
+  
   Categories.findOrCreate({ where: { Category: category } })
     .then((categoryData) => {
       const categoryId = categoryData[0].id;
-      console.log(categoryId);
+      // console.log(categoryId);
       // console.log(categoryData);
       Subcategories.findOrCreate({
         where: { subCategory: subCategory, CategoryId: categoryId },
       })
         .then((subCategoryData) => {
           const subCategoryId = subCategoryData[0].id;
-          console.log(subCategoryId);
+          // console.log(subCategoryId);
           const product = {
             pname: pname,
             price: price,
             MerchantId: merchantId,
             CategoryId: categoryId,
             SubCategoryId: subCategoryId,
+            discountedPrice:discountedPrice,
+            discount:discount,
+            description:description,
+            stock:stock
           };
-          Products.findOrCreate({ where: product })
+          Products.findOrCreate({ where:{pname:pname,CategoryId:categoryId,SubCategoryId:subCategoryId,MerchantId:merchantId} ,defaults:product})
             .then((productData) => {
-              console.log("-----product inserted");
-              res
-                .status(200)
-                .json({
-                  message: "Product Data Inserted",
+              console.log("-----product inserted",productData[1]);
+              if(productData[1]){
+              res.status(200).json({
+                message: "Product Data Inserted",
+                product: productData[0].dataValues,
+              });} else {
+                res.status(200).json({
+                  message: "Product Already exists Please update product details",
                   product: productData[0].dataValues,
-                });
+                })
+              }
             })
             .catch((err) => {
               console.log(err);
@@ -161,19 +167,30 @@ addProduct = (req, res) => {
 };
 
 updateProduct = (req, res) => {
-  const productId = req.body.productId;
-  let stock = req.body.stock;
-  const price = req.body.price;
-  Products.findOne({ where: { id: productId } })
+  const merchantId = req.id;
+  console.log(merchantId);
+  const updatedProduct = req.body;
+  const productId = updatedProduct.id
+  Products.findOne({ where: { id: productId,MerchantId: merchantId} })
     .then((productData) => {
-      stock += productData.stock;
+      if(!productData){
+        return res.status(404).json({message:"Product not found"})
+      }
+      const price = updatedProduct.price || productData.price;
+      const discount = updatedProduct.discount || productData.discount;
+      if((updatedProduct.price)||(updatedProduct.discount))
+      updatedProduct.discountedPrice = price - ((price*discount)/100);
+      updatedProduct.price = price;
+      updatedProduct.discount = discount;
       Products.update(
-        { stock: stock, price: price },
+        updatedProduct,
         { where: { id: productId } }
       )
         .then(() => {
-          console.log("Stock and Price updated Successfully");
-          res.status(200).json({message:"Stock and Price updated Successfully"});
+          console.log("Product updated Successfully");
+          res
+            .status(200)
+            .json({ message: "Product updated Successfully" });
         })
         .catch((err) => {
           console.log("error------> " + err);
@@ -188,17 +205,60 @@ updateProduct = (req, res) => {
     });
 };
 
+deleteProduct = (req, res) => {
+  const merchantId = req.id
+  const productId = req.body.id;
+  Products.destroy({ where: { id: productId,MerchantId:merchantId } })
+    .then(() => {
+      console.log("Deleted successfully");
+      res.status(200).json({ message: "Product Deleted" });
+    })
+    .catch((err) => {
+      console.log(err);
+      res
+        .status(404)
+        .json({ message: "Some error occured in product deletion" });
+    });
+};
 
-deleteProduct = (req,res)=>{
-  const productId = req.query.id;
-  Products.update({status:0},{where:{id:productId}}).then(()=>{
-    console.log("Deleted successfully");
-    res.status(200).json({message:"Product Deleted"});
+getMerchantProducts = async (req, res) => {
+  const limit = 5;
+    const page = req.query.page;
+    let offset = 0;
+    if(page) {
+    offset = (page-1)*limit;}
+  let merchantId = req.id;
+  if (req.id) {
+    merchantId = req.id;
+  }
+  Products.findAll({
+    where: {
+      merchantId: merchantId,
+      status:1
+    },
+   attributes: ["stock", "price", "pname"],limit:limit,offset:offset,
+    include: [
+      {
+        model: Categories,
+        as: "Category",
+        attributes: ["Category"]
+      },
+      {
+        model: Subcategories,
+        as: "Sub-category",
+        attributes: ["subCategory"],
+      }
+    ]
+  } 
+  ).then((productData) => {
+    res.status(200).json({ message: productData });
   }).catch((err)=>{
-    console.log(err);
-    res.status(404).json({message:"Some error occured in product deletion"})
-  })
-}
+    console.log(err)
+    res.status(404).json({message:"Error in fetching product"})
+  });
+};
+
+
 
 module.exports = {
   merchantReg,
@@ -207,4 +267,5 @@ module.exports = {
   addProduct,
   updateProduct,
   deleteProduct,
+  getMerchantProducts
 };

@@ -85,7 +85,7 @@ showAllMerchant = (req,res)=>{
 }
 
 showAllCustomers = (req,res)=>{
-    const limit = 5;
+    const limit = 3;
     const page = req.query.page;
     let offset = 0;
     if(page) {
@@ -131,7 +131,8 @@ verifyMerchant = async( req, res)=>{
 }
 
 blockMerchant = (req,res)=>{
-    const id = req.query.id;
+    const id = req.body.id;
+    console.log(id);
     Merchants.findOne({where:{id:id}}).then((merchantData)=>{
         if(merchantData.status===1){
             Merchants.update({status:-1},{where:{id:id}}).then(()=>{
@@ -164,7 +165,7 @@ blockMerchant = (req,res)=>{
 
 
 blockCustomer = (req,res)=>{
-    const id = req.query.id;
+    const id = req.body.id;
     Customers.findOne({where:{id:id}}).then((customerData)=>{
         if(customerData.status===1){
             Customers.update({status:-1},{where:{id:id}}).then(()=>{
@@ -194,7 +195,7 @@ blockCustomer = (req,res)=>{
 
 
 blockProduct = (req,res)=>{
-    const id = req.query.id;
+    const id = req.body.id;
     Products.findOne({where:{id:id}}).then((customerData)=>{
         if(customerData.status===1){
             Products.update({status:-1},{where:{id:id}}).then(()=>{
@@ -213,12 +214,15 @@ blockProduct = (req,res)=>{
             })
         }
         else if(customerData.status===0){
-            res.status(500).json({message:"product"});
+            res.status(404).json({message:"Product already been deleted"})
+        }
+        else{
+            throw Error
         }
 
     }).catch((err)=>{
         console.log(err);
-        res.status(400).json({message:"Error in fetching Product"})
+        res.status(400).json({message:"Some error ocurred"})
     })
 }
 
