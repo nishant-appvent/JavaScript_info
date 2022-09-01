@@ -291,11 +291,14 @@ getAllProducts = async (req, res) => {
 
 
 addToCart = (req, res) => {
-  const customerId = 2;
+  const customerId = req.id;
   const productId = req.body.productId;
   const quantity = req.body.quantity;
   console.log(req.body);
   Products.findOne({ where: { id: productId } }).then((productData) => {
+    if(!productData){
+        return res.status(404).json({message:"Product not found."})
+    }
     const discount = productData.discount;
     console.log(discount);
     const price = productData.price;
@@ -335,13 +338,13 @@ addToCart = (req, res) => {
                     model: Merchants,
                     as: "Merchant",
                     attributes: ["name", "phone", "email"],
-                  },
+                  },    
                   {
                     model: Products,
                     as: "Product",
                     attributes: ["pname", "price"],
                   }
-                ],where:{CustomerId:customerId}
+                ],where:{CustomerId:customerId,id:cartFetchedData.id}
               }).then((cartDetails) => {
                 for (let k of cartDetails.rows) {
                   console.log(k.dataValues.price);
@@ -391,7 +394,7 @@ addToCart = (req, res) => {
                     as: "Product",
                     attributes: ["pname", "price"],
                   },
-                ],where:{CustomerId:customerId}
+                ],where:{CustomerId:customerId,id:cartInsertedData.id}
               }).then((cartDetails) => {
                 console.log(cartDetails);
                 res.status(200).json({
@@ -416,20 +419,32 @@ addToCart = (req, res) => {
 
 cartDetails = (req, res) => {
   // const customerId = req.id
-  const customerId = 2;
+  const customerId = req.id;
+  console.log(customerId);
   Cart.findAll({
+    where:{CustomerId:customerId},
     attributes: [
-      "CustomerId",
       [sequelize.fn('sum', sequelize.col("discountedPrice")), "grandTotal"],
       [sequelize.fn('COUNT', sequelize.col("discountedPrice")), "productCount"],
     ],
     group: ["CustomerId"],
-  },{where:{CustomerId:customerId}}).then((cartData) => {
+    raw:true
+  }).then((cartData) => {
+    // console.log(cartData)
+    // res.json({grandTotal:cartData[0]});
+    // console.log(cartData);
+    // console.log("\\\\\\\\");
+    // console.log(cartData[0]);
+    // console.log("--------------");
+    // console.log(cartData[1]);
+    console.log("------=======-----");
     const sChargeLimit = 10000;
     let shippingCharge = 0;
-    const grandTotal = parseInt(cartData[0].dataValues.grandTotal);
-    const productCount = cartData[0].dataValues.productCount;
-    console.log(typeof grandTotal)
+    // console.log(cartData);
+    const grandTotal = parseInt(cartData[0].grandTotal);
+    console.log(grandTotal);
+    const productCount = cartData[0].productCount;
+    // console.log(typeof grandTotal)
     if(grandTotal<sChargeLimit){
         shippingCharge = 100;
     }
@@ -439,9 +454,47 @@ cartDetails = (req, res) => {
         shippingCharge:shippingCharge,
         productCount:productCount
     }
-    console.log(newCartData);
-    CartDetails.findOrCreate({where:newCartData}).then((dataInserted)=>{
-        res.status(200).json(dataInserted[0]);
+    // console.log(newCartData);
+    CartDetails.findOrCreate({where:{CustomerId:customerId},defaults:newCartData}).then((dataInserted)=>{
+        if(dataInserted[1]){
+            res.status(200).json(dataInserted[0]);
+        }else{
+            CartDetails.update(newCartData,{where:{CustomerId:customerId}}).then(()=>{
+                CartDetails.findOne({where:{CustomerId:customerId}}).then((cartDet)=>{
+                    Cart.findAndCountAll({
+                        attributes: [
+                          "discountPercent",
+                          "discountedPrice",
+                          "price",
+                          "quantity",
+                        ],
+                        include: [
+                          {
+                            model: Merchants,
+                            as: "Merchant",
+                            attributes: ["name", "phone", "email"],
+                          },    
+                          {
+                            model: Products,
+                            as: "Product",
+                            attributes: ["pname", "price"],
+                          }
+                        ],where:{CustomerId:customerId}
+                      }).then((cartDetails) => {
+                        for (let k of cartDetails.rows) {
+                          console.log(k.dataValues.price);
+                        }
+                        res.status(200).json({
+                          message: "product added successfully",
+                          cartDetails: cartDetails,
+                          cartDet:cartDet
+                        });
+                      });
+            }
+            )
+        });
+        
+    }
     })
   }); 
 };
@@ -450,16 +503,20 @@ cartDetails = (req, res) => {
 orderProducts = async (req,res)=>{
     const addressId = req.body.addressId;
     const orderId = req.body.orderId;
-    let productCount = req.body.productCount;
-    const grandTotal = req.body.grandTotal;
-    const shippingCharge = req.body.shippingCharge;
-    // const customerId = req.id
-    const customerId = 1;
+    const customerId = req.id;
+    try{
     const addressObj = await addressTable.findOne({where:{id:addressId,CustomerId:customerId}});
     if(!addressObj){
         return res.status(404).json({message:"Please Fill address details"});
     }
-
+    const orderIdObj = await CartDetails.findOne({where:{id:orderId,status:0}});
+    if(!orderIdObj){
+        return res.status(404).json({message:"Cart details not found"});
+    }
+    let productCount = orderIdObj.productCount; 
+    // let productCount = 2; 
+    const grandTotal = orderIdObj.grandTotal; 
+    const shippingCharge = orderIdObj.shippingCharge; 
     let address = "Locality : " + addressObj.locality + " | City : " + addressObj.city + " | State : " + addressObj.state + " | Zipcode : " + addressObj.zipcode;
 
     console.log(address);
@@ -474,16 +531,24 @@ orderProducts = async (req,res)=>{
         const productData = await Products.findOne({where:{id:productId}});
         const stock = productData.stock-quantity;
         await Products.update({stock:stock},{where:{id:productId}});
+
         await Cart.destroy({where:{CustomerId:customerId,ProductId:productId}});
+
         productCount--;
     }
+    await CartDetails.update({status:1},{where:{CustomerId:customerId}});
     res.status(200).json({message:"Order Successfull", TotalAmount:grandTotal,shippingCharge:shippingCharge});
+    }
+    catch(err){
+        console.log(err);
+        res.status(500).json({message:"Internal server error occurred"})
+    }
 }
 
 
 removeFromCart = async (req,res)=>{
-    // const customerId = req.id;
-    const customerId = 2;
+    const customerId = req.id;
+
     const productId = req.body.productId;
     try{
     await Cart.destroy({where:{CustomerId:customerId,ProductId:productId}});
@@ -494,8 +559,6 @@ removeFromCart = async (req,res)=>{
     }
     
 }
-
-
 
 
 orderDetails = (req, res) => {

@@ -36,7 +36,7 @@ router.post('/addToCart',jwtMiddleware.userLoginJWT,CustomerController.addToCart
 router.post('/orderDetails',jwtMiddleware.userLoginJWT,CustomerController.orderDetails);
 router.get('/cartDetails',jwtMiddleware.userLoginJWT,CustomerController.cartDetails);
 router.post('/orderProducts',jwtMiddleware.userLoginJWT,CustomerController.orderProducts);
-router.post('/removeFromCart',jwtMiddleware.userLoginJWT,CustomerController.removeFromCart);
+router.delete('/removeFromCart',jwtMiddleware.userLoginJWT,CustomerController.removeFromCart);
 
 // public
 router.get('/getAllProducts',CustomerController.getAllProducts);
