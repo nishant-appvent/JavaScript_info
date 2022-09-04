@@ -40,12 +40,12 @@ mailToken= async (token,email)=>{
 loginAdmin=(req,res)=>{
     const email = req.body.email
     const password = req.body.password
-    console.log(password)
+    // console.log(password)
     Admins.findOne({where:{email:email}}).then((adminDet)=>{
         if(!adminDet){
-            return res.status(200).json({message:"User not registered"})  
+            return res.status(200).json({status:false,message:"This email is not registered"})  
         }
-        console.log(adminDet.password);
+        // console.log(adminDet.password);
         bcrypt.compare(password,adminDet.password,(err,check)=>{
             if(check){
                 console.log("Password matched");

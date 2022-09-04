@@ -6,7 +6,7 @@ const orderFindAll = ()=>{
     return Orders.findAll().then((data)=>{
             return data;
         }).catch((err)=>{
-            return err;
+            return false;
         })
 };
 

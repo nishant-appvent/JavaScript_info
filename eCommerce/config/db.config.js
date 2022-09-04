@@ -28,8 +28,8 @@ db.category = require('../src/models/categoryModel')(sequelize,DataTypes);
 db.subCategory = require('../src/models/subCategoryModel')(sequelize,DataTypes);
 db.product = require('../src/models/productModel')(sequelize,DataTypes);
 db.cart = require('../src/models/cartModel')(sequelize,DataTypes);
-db.cartDetails = require('../src/models/cartDetailsModel')(sequelize,DataTypes);
-db.order = require('../src/models/orderModel')(sequelize,DataTypes);
+db.order= require('../src/models/orderModel')(sequelize,DataTypes);
+db.orderItem = require('../src/models/orderItemsModel')(sequelize,DataTypes);
 
 (db.customers).hasMany(db.address);
 (db.address).belongsTo(db.customers);
@@ -52,31 +52,26 @@ db.order = require('../src/models/orderModel')(sequelize,DataTypes);
 (db.product).hasMany(db.cart);
 (db.cart).belongsTo(db.product);
 
-(db.merchants).hasMany(db.cart);
-(db.cart).belongsTo(db.merchants);
+// (db.merchants).hasMany(db.cart);
+// (db.cart).belongsTo(db.merchants);
 
-(db.customers).hasOne(db.cartDetails);
-(db.cartDetails).belongsTo(db.customers);
-
-
-(db.customers).hasMany(db.order);
+(db.customers).hasOne(db.order);
 (db.order).belongsTo(db.customers);
 
-(db.product).hasMany(db.order);
-(db.order).belongsTo(db.product);
 
-(db.merchants).hasMany(db.order);
-(db.order).belongsTo(db.merchants);
+(db.customers).hasMany(db.orderItem);
+(db.orderItem).belongsTo(db.customers);
 
+(db.product).hasMany(db.orderItem);
+(db.orderItem).belongsTo(db.product);
 
-(db.cartDetails).hasMany(db.order,{foreignKey:'orderId'});
-(db.order).belongsTo(db.cartDetails,{foreignKey:'orderId'});
+(db.merchants).hasMany(db.orderItem);
+(db.orderItem).belongsTo(db.merchants);
 
+(db.order).hasMany(db.orderItem);
+(db.orderItem).belongsTo(db.order);
 
-
-// console.log(db.customers);
-
-db.sequelize.sync({alter:true}).then(()=>{
+db.sequelize.sync({alter:true,}).then(()=>{
     console.log ("yes re sync");
 })
 

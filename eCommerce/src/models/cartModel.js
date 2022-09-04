@@ -1,19 +1,6 @@
 
 module.exports = (sequelize,DataTypes)=>{
     const Cart = sequelize.define("Cart",{
-        price:{
-            type:DataTypes.FLOAT,
-            allowNull:false
-        },
-        discountPercent:{
-            type:DataTypes.FLOAT,
-            defaultValue:0,
-            allowNull:false
-        },
-        discountedPrice:{
-            type:DataTypes.FLOAT,
-            allowNull:false
-        },
         quantity:{
             type:DataTypes.INTEGER,
             allowNull:false,
