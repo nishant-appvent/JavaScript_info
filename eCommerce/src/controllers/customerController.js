@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+
 const jwt = require("jsonwebtoken");
 const sequelize = require("sequelize");
 const dbConn = require("../../config/db.config");
@@ -13,7 +14,7 @@ const Cart = dbConn.cart;
 const orderService = require("../services/orderServices");
 const Orders = dbConn.order;
 const OrderItems = dbConn.orderItem;
-
+const paymentViaCard = require("../utils/paymentViaCard");
 let nodemailer = require("nodemailer");
 
 mailOtp = async (genOtp, email) => {
@@ -158,7 +159,7 @@ registerCustomer = async (req, res) => {
     step: 1,
   };
   try {
-    Customers.update(Customer, { where: { email: email } }).then(() => {  
+    Customers.update(Customer, { where: { email: email } }).then(() => {
       Customers.findOne({ where: { email: email } }).then((customerData) => {
         // customerData.reload();
         console.log(customerData);
@@ -367,12 +368,17 @@ getCartDetails = async (req, res) => {
       {
         model: Products,
         as: "Product",
-        attributes: ["pname", "price","discountedPrice"],
+        attributes: ["id", "pname", "price", "discountedPrice", "description"],
         include: [
           {
             model: Merchants,
             as: "Merchant",
-            attributes: ["name", "email"],
+            attributes: ["id", "name", "email"],
+          },
+          {
+            model: Categories,
+            as: "Category",
+            attributes: ["id", "Category"],
           },
         ],
       },
@@ -381,6 +387,7 @@ getCartDetails = async (req, res) => {
   });
   let totalPrice = 0;
   let totalDiscountedPrice = 0;
+  let productCount = 0;
   cartData.forEach((element) => {
     let quantity = element.dataValues.quantity;
     let discountedPrice = element.dataValues.Product.discountedPrice;
@@ -390,11 +397,13 @@ getCartDetails = async (req, res) => {
     totalDiscountedPrice += discountedPrice * quantity;
     element.dataValues.price = price * quantity;
     element.dataValues.discountedPrice = discountedPrice * quantity;
+    productCount++;
   });
 
   res.status(200).json({
     totalPrice: totalPrice,
     totalDiscountedPrice: totalDiscountedPrice,
+    productCount: productCount,
     cartData: cartData,
   });
 };
@@ -413,6 +422,154 @@ removeFromCart = async (req, res) => {
     res.status(404).json({ message: "Internal Server Error" });
   }
 };
+
+// orderProducts = async (req, res) => {
+//   const customerId = req.id;
+//   const addressId = req.body.addressId;
+//   try {
+//     const addressObj = await addressTable.findOne({
+//       where: { id: addressId, CustomerId: customerId },
+//     });
+//     if (!addressObj) {
+//       return res.status(404).json({ message: "Please Fill address details" });
+//     }
+//     let address =
+//       "Locality : " +
+//       addressObj.locality +
+//       " | City : " +
+//       addressObj.city +
+//       " | State : " +
+//       addressObj.state +
+//       " | Zipcode : " +
+//       addressObj.zipcode;
+
+//     const cartData = await Cart.findAll({
+//       attributes: ["quantity", "ProductId"],
+//       include: [
+//         {
+//           model: Products,
+//           as: "Product",
+//           attributes: ["pname", "price", "discountedPrice", "discount"],
+//           include: [
+//             {
+//               model: Merchants,
+//               as: "Merchant",
+//               attributes: ["id", "name", "email"],
+//             },
+//           ],
+//         },
+//       ],
+//       where: { CustomerId: customerId },
+//     });
+//     if (cartData.length === 0) {
+//       return res
+//         .status(404)
+//         .json({ status: false, message: "Please add products to your cart" });
+//     }
+
+//     let totalPrice = 0;
+//     let totalDiscountedPrice = 0;
+//     let productCount = 0;
+//     let productIdList = [];
+//     cartData.forEach((element) => {
+//       let quantity = element.dataValues.quantity;
+//       let discountedPrice = element.dataValues.Product.discountedPrice;
+//       let price = element.dataValues.Product.price;
+//       let productId = element.dataValues.ProductId;
+//       totalPrice += price * quantity;
+//       totalDiscountedPrice += discountedPrice * quantity;
+//       element.dataValues.price = price * quantity;
+//       element.dataValues.discountedPrice = discountedPrice * quantity;
+//       productIdList.push(productId);
+//       productCount++;
+//     });
+//     console.log(productIdList);
+
+//     const productList = await Products.findAll({
+//       where: {
+//         id: productIdList,
+//       },
+//       raw: true,
+//     });
+//     if (productIdList.length !== cartData.length) {
+//       return res.status(404).json({
+//         status: false,
+//         message: "Some Product from your cart is not available now.",
+//       });
+//     }
+
+//     productList.forEach((element, index, arr) => {
+//       const cartQuantity = cartData[index].dataValues.quantity;
+//       if (element.status !== 1) {
+//         return res.status(404).json({
+//           status: false,
+//           message: `${element.pname} is not is available now.`,
+//         });
+//       } else if (element.stock < cartQuantity) {
+//         return res.status(404).json({
+//           status: false,
+//           message: `${element.pname} is not is stock now.Available stock is ${element.stock}`,
+//         });
+//       } else {
+//         element.stock -= cartQuantity;
+//       }
+//     });
+
+//     let shippingCharge = 0;
+//     const shippingLimitCharge = 1000;
+//     if (totalDiscountedPrice < shippingLimitCharge) {
+//       shippingCharge = 100;
+//     }
+
+//     const orderData = await Orders.create({
+//       CustomerId: customerId,
+//       productCount: productCount,
+//       grandTotal: totalDiscountedPrice,
+//       shippingCharge: shippingCharge,
+//       address: address,
+//     });
+
+//     const orderId = orderData.id;
+//     // const paymentStatus = orderData.paymentStatus;
+//     // if (!paymentStatus) {
+//     //   return res
+//     //     .status(404)
+//     //     .json({ status: false, message: "Payment not done yet" });
+//     // }
+
+//     const orderItemsList = [];
+//     cartData.forEach((element, index, arr) => {
+//       const orderItemObj = {
+//         CustomerId: customerId,
+//         OrderId: orderId,
+//         ProductId: element.dataValues.ProductId,
+//         quantity: element.dataValues.quantity,
+//         price: element.dataValues.price,
+//         discountPercent: element.dataValues.Product.discount,
+//         discountedPrice: element.dataValues.discountedPrice,
+//         MerchantId: element.dataValues.Product.Merchant.id,
+//       };
+//       orderItemsList.push(orderItemObj);
+//     });
+
+//     console.log(orderItemsList);
+//     const orderItemsDetails = await OrderItems.bulkCreate(orderItemsList);
+//     console.log();
+//     await Products.bulkCreate(productList, {
+//       updateOnDuplicate: ["stock"],
+//     });
+//     await Cart.destroy({ where: { CustomerId: customerId } });
+
+//     console.log(orderItemsList);
+
+//     res
+//       .status(200)
+//       .json({ status: true, message: "Order Placed Successfully" });
+//   } catch (err) {
+//     console.log(">>>>>>>>>>>>Error in placing order", err);
+//     return res.status(404).json({ message: "Internal Server Error" });
+//   }
+// };
 
 orderProducts = async (req, res) => {
   const customerId = req.id;
@@ -517,50 +674,142 @@ orderProducts = async (req, res) => {
       productCount: productCount,
       grandTotal: totalDiscountedPrice,
       shippingCharge: shippingCharge,
-      paymentStatus: 1,
+      address: address,
     });
-
-    const orderId = orderData.id;
-    const paymentStatus = orderData.paymentStatus;
-    if (!paymentStatus) {
-      return res
-        .status(404)
-        .json({ status: false, message: "Payment not done yet" });
-    }
-
-    const orderItemsList = [];
-    cartData.forEach((element, index, arr) => {
-      const orderItemObj = {
-        CustomerId: customerId,
-        OrderId: orderId,
-        ProductId: element.dataValues.ProductId,
-        quantity: element.dataValues.quantity,
-        price: element.dataValues.price,
-        discountPercent: element.dataValues.Product.discount,
-        discountedPrice: element.dataValues.discountedPrice,
-        MerchantId: element.dataValues.Product.Merchant.id,
-        address: address,
-      };
-      orderItemsList.push(orderItemObj);
-    });
-
-    console.log(orderItemsList);
-    const orderItemsDetails = await OrderItems.bulkCreate(orderItemsList);
-    console.log();
-    await Products.bulkCreate(productList, {
-      updateOnDuplicate: ["stock"],
-    });
-    await Cart.destroy({ where: { CustomerId: customerId } });
-
-    console.log(orderItemsList);
-
-    res
+    console.log(orderData);
+    return res
       .status(200)
-      .json({ status: true, message: "Order Placed Successfully" });
+      .json({ status: "false", message: "Order Created", orderData });
   } catch (err) {
-    console.log(">>>>>>>>>>>>Error in placing order", err);
-    return res.status(404).json({ message: "Internal Server Error" });
+    console.log(">>>>>>>>>>>>Error in generating order ", err);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
+};
+
+paymentAndOrder = async (req, res) => {
+  const orderId = req.body.orderId;
+  const customerId = req.id;
+  const cartData = await Cart.findAll({
+    attributes: ["quantity", "ProductId"],
+    include: [
+      {
+        model: Products,
+        as: "Product",
+        attributes: ["pname", "price", "discountedPrice", "discount"],
+        include: [
+          {
+            model: Merchants,
+            as: "Merchant",
+            attributes: ["id", "name", "email"],
+          },
+        ],
+      },
+    ],
+    where: { CustomerId: customerId },
+  });
+  
+  if(cartData.length===0){
+    return res.status(404).json({status:false, message:"Cart is empty now."})
+  }
+  const cardDetails = {
+    number: req.body.number,
+    exp_month: req.body.exp_month,
+    exp_year: req.body.exp_year,
+    cvc: req.body.cvc,
+  };
+
+  const orderDetails = await Orders.findOne({
+    where: { id: orderId },
+  });
+  if(!orderDetails){
+    return res.status(404).json({status:false,message:"Order details not found "})
+  }
+  const amount = +(+orderDetails.grandTotal + +orderDetails.shippingCharge);
+
+  const customerData = await Customers.findOne({
+    where: { id: customerId },
+    raw:true
+  });
+  const customerDetails ={email:customerData.email,name:customerData.name};
+  const forPaymentData = { customerDetails, cardDetails, amount,orderId };
+
+  const paymentData = await paymentViaCard.paymentFunc(forPaymentData);
+  if (paymentData.status !== 1) {
+    return res
+      .status(404)
+      .json({ status: false, message: "Payment not Successfull", paymentData });
+  }
+  await Orders.update({paymentStatus:1},{where:{id:orderId}});
+
+
+  let productIdList = [];
+  cartData.forEach((element) => {
+    let quantity = element.dataValues.quantity;
+    let discountedPrice = element.dataValues.Product.discountedPrice;
+    let price = element.dataValues.Product.price;
+    let productId = element.dataValues.ProductId;
+    element.dataValues.price = price * quantity;
+    element.dataValues.discountedPrice = discountedPrice * quantity;
+    productIdList.push(productId);
+  });
+  console.log(productIdList);
+
+  const productList = await Products.findAll({
+    where: {
+      id: productIdList,
+    },
+    raw: true,
+  });
+  if (productIdList.length !== cartData.length) {
+    return res.status(404).json({
+      status: false,
+      message: "Some Product from your cart is not available now.",
+    });
+  }
+
+  productList.forEach((element, index, arr) => {
+    const cartQuantity = cartData[index].dataValues.quantity;
+    if (element.status !== 1) {
+      return res.status(404).json({
+        status: false,
+        message: `${element.pname} is not is available now.`,
+      });
+    } else if (element.stock < cartQuantity) {
+      return res.status(404).json({
+        status: false,
+        message: `${element.pname} is not is stock now.Available stock is ${element.stock}`,
+      });
+    } else {
+      element.stock -= cartQuantity;
+    }
+  });
+
+  const orderItemsList = [];
+  cartData.forEach((element, index, arr) => {
+    const orderItemObj = {
+      CustomerId: customerId,
+      OrderId: orderId,
+      ProductId: element.dataValues.ProductId,
+      quantity: element.dataValues.quantity,
+      price: element.dataValues.price,
+      discountPercent: element.dataValues.Product.discount,
+      discountedPrice: element.dataValues.discountedPrice,
+      MerchantId: element.dataValues.Product.Merchant.id,
+    };
+    orderItemsList.push(orderItemObj);
+  });
+
+  console.log(orderItemsList);
+  const orderItemsDetails = await OrderItems.bulkCreate(orderItemsList);
+  console.log();
+  await Products.bulkCreate(productList, {
+    updateOnDuplicate: ["stock"],
+  });
+  await Cart.destroy({ where: { CustomerId: customerId } });
+
+  console.log(orderItemsList);
+
+  res.status(200).json({ status: true, message: "Order Placed Successfully",orderItemsDetails,receiptUrl:paymentData.receiptUrl });
 };
 
 orderDetails = async (req, res) => {
@@ -585,8 +834,10 @@ orderDetails = async (req, res) => {
       ],
       where: { CustomerId: customerId },
     });
-    if(orderDet.length===0){
-      return res.status(200).json({status:true, message:"You haven't placed any order yet"});
+    if (orderDet.length === 0) {
+      return res
+        .status(200)
+        .json({ status: true, message: "You haven't placed any order yet" });
     }
     return res.status(200).json({ status: true, orderDet });
   } catch (err) {
@@ -596,6 +847,35 @@ orderDetails = async (req, res) => {
       .json({ status: false, message: "Internal Server Error" });
   }
 };
+
+addBulkCart = async (req, res) => {
+  const cartArr = [];
+  count = 0;
+  let max = 1;
+  let users = [1, 2, 3, 4];
+  users.forEach((element, index) => {
+    max = 5;
+    min = 1;
+    for (let i = 1; i <= 60; i++) {
+      for (let j = 0; j < 1; j++) {
+        const ProductId = Math.floor(Math.random() * (max - min + 1)) + min;
+        const CustomerId = element;
+        const quantity = 2;
+        const cartObj = { ProductId, CustomerId, quantity };
+        cartArr.push(cartObj);
+      }
+      max += 5;
+      min += 5;
+      count++;
+    }
+  });
+
+  console.log(count);
+  console.log(cartArr);
+  Cart.bulkCreate(cartArr);
+};
+
+
 
 module.exports = {
   registerCustomer,
@@ -609,4 +889,6 @@ module.exports = {
   getCartDetails,
   orderProducts,
   removeFromCart,
+  addBulkCart,
+  paymentAndOrder,
 };

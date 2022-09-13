@@ -18,9 +18,14 @@ module.exports = (sequelize,DataTypes)=>{
             type:DataTypes.INTEGER,
             allowNull:false
         },
+        address:{
+            type:DataTypes.STRING,
+            allowNull:false
+        },
         paymentStatus:{
             type:DataTypes.INTEGER,
-            allowNull:false
+            allowNull:false,
+            defaultValue:0
         }
 
     },{

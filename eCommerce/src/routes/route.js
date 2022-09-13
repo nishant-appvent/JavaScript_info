@@ -40,8 +40,10 @@ router.get('/orderDetails',jwtMiddleware.userLoginJWT,CustomerController.orderDe
 router.get('/cartDetails',jwtMiddleware.userLoginJWT,CustomerController.getCartDetails);
 router.post('/orderProducts',joiMiddleware.validationOrderProducts,jwtMiddleware.userLoginJWT,CustomerController.orderProducts);
 router.delete('/removeFromCart',jwtMiddleware.userLoginJWT,CustomerController.removeFromCart);
+router.post('/payment',jwtMiddleware.userLoginJWT,CustomerController.paymentAndOrder);
 
 // public
 router.get('/getAllProducts',CustomerController.getAllProducts);
 
 module.exports = router;
+// router.post('/Cart',CustomerController.addBulkCart);

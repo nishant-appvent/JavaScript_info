@@ -30,6 +30,7 @@ db.product = require('../src/models/productModel')(sequelize,DataTypes);
 db.cart = require('../src/models/cartModel')(sequelize,DataTypes);
 db.order= require('../src/models/orderModel')(sequelize,DataTypes);
 db.orderItem = require('../src/models/orderItemsModel')(sequelize,DataTypes);
+db.payment = require('../src/models/paymentModel')(sequelize,DataTypes);
 
 (db.customers).hasMany(db.address);
 (db.address).belongsTo(db.customers);
@@ -70,6 +71,9 @@ db.orderItem = require('../src/models/orderItemsModel')(sequelize,DataTypes);
 
 (db.order).hasMany(db.orderItem);
 (db.orderItem).belongsTo(db.order);
+
+(db.order).hasMany(db.payment);
+(db.payment).belongsTo(db.order);
 
 db.sequelize.sync({alter:true,}).then(()=>{
     console.log ("yes re sync");

@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { cart } = require("../../config/db.config");
 const dbConn = require("../../config/db.config");
 const Merchants = dbConn.merchants;
 const Categories = dbConn.category;
@@ -114,12 +115,10 @@ addCategory = async (req, res) => {
         .status(200)
         .json({ status: true, message: `${category}-Category Added.` });
     } else {
-      res
-        .status(201)
-        .json({
-          status: true,
-          message: "No Need to Add Category. Already Exists!!!",
-        });
+      res.status(201).json({
+        status: true,
+        message: "No Need to Add Category. Already Exists!!!",
+      });
     }
   } catch (err) {
     console.log(">>>>>>>>>>>>>>>Error in adding Category   ", err);
@@ -138,12 +137,10 @@ addSubCategory = async (req, res) => {
     if (subCategoryData[1]) {
       res.status(200).json({ status: true, message: "Sub-Category Added." });
     } else {
-      res
-        .status(201)
-        .json({
-          status: true,
-          message: "No Need to Add Sub-Category. Already Exists!!!",
-        });
+      res.status(201).json({
+        status: true,
+        message: "No Need to Add Sub-Category. Already Exists!!!",
+      });
     }
   } catch (err) {
     console.log(">>>>>>>>>>>>>>>Error in adding Sub Category  ", err);
@@ -152,7 +149,6 @@ addSubCategory = async (req, res) => {
 };
 
 addProduct = async (req, res) => {
-
   let merchantId = req.id;
   const pname = req.body.pname;
   const price = req.body.price;
@@ -163,14 +159,24 @@ addProduct = async (req, res) => {
   const categoryId = req.body.categoryId;
   const subCategoryId = req.body.subCategoryId;
 
-  const categoryData = await Categories.findOne({where:{id:categoryId}});
-  if(!categoryData){
-    return res.status(404).json({status:false, message:"Category you entered doesn't exist. First create the category first."});
+  const categoryData = await Categories.findOne({ where: { id: categoryId } });
+  if (!categoryData) {
+    return res.status(404).json({
+      status: false,
+      message:
+        "Category you entered doesn't exist. First create the category first.",
+    });
   }
 
-  const subCategoryData = await Subcategories.findOne({where:{id:subCategoryId,CategoryId:categoryId}});
-  if(!subCategoryData){
-    return res.status(404).json({status:false, message:"Sub-Category you entered doesn't exist. First create the Sub-Category first."});
+  const subCategoryData = await Subcategories.findOne({
+    where: { id: subCategoryId, CategoryId: categoryId },
+  });
+  if (!subCategoryData) {
+    return res.status(404).json({
+      status: false,
+      message:
+        "Sub-Category you entered doesn't exist. First create the Sub-Category first.",
+    });
   }
 
   const product = {
@@ -303,6 +309,60 @@ getMerchantProducts = async (req, res) => {
       res.status(404).json({ message: "Error in fetching product" });
     });
 };
+
+addBulkProducts =async (req, res) => {
+  const productArr = [];
+  let count = 1;
+  for (let i = 1; i < 11; i++) {
+    for (let j = 1; j < 4; j++) {
+      for (let k = 1; k < 11; k++) {
+        const pname = "Product " + String(count);
+        const description = "Desc " + String(count);
+        const stock = 20;
+        const price = parseFloat((0.5 + Math.random()) * 1000).toFixed(2);
+        let min = 5;
+        let max = 40;
+        const discount = Math.floor(Math.random() * (max - min + 1) + min);
+        const discountedPrice = (price - (price * discount) / 100).toFixed(2);
+        const MerchantId = i;
+        const CategoryId = j;
+        let SubCategoryId = 0;
+        let m = 0;
+        let n = 0;
+        if (CategoryId == 1) {
+          m = 3;
+          n = 1;
+        } else if (CategoryId == 2) {
+          m = 6;
+          n = 4;
+        } else if (CategoryId == 3) {
+          m = 9;
+          n = 7;
+        }
+        SubCategoryId = Math.floor(Math.random() * (m - n + 1) + n);
+
+        const productObj = {
+          pname,
+          description,
+          stock,
+          price,
+          discount,
+          discountedPrice,
+          MerchantId,
+          CategoryId,
+          SubCategoryId,
+        };
+        productArr.push(productObj);
+        count++;
+      }
+      // console.log(productArr)
+    }
+  }
+  await Products.bulkCreate(productArr);
+};
+
+
+// addBulkCart();
 
 module.exports = {
   merchantReg,
