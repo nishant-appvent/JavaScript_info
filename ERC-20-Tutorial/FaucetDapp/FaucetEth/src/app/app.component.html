@@ -1,0 +1,8 @@
+<h1>Faucet App</h1>
+<button type="button" class="btn btn-success" (click)="connectWallet()">Connect Wallet</button>
+<p *ngIf="newVar">Connected With:{{account}}</p>
+
+
+<button type="button" class="btn btn-success" (click)="getMYHandler()">Get Tokens</button>
+
+<p>{{withdrawlError}}{{withdrawlSuccess}}</p>

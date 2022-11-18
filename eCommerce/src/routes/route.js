@@ -4,6 +4,7 @@ const MerchantController = require('../controllers/merchantController')
 const AdminController = require('../controllers/adminController')
 const jwtMiddleware = require('../middlewares/auth')
 const joiMiddleware = require('../middlewares/joiValidation')
+const paypalUtil = require('../utils/paypalUtil');
 
 router.get('/test',(req,res)=>{
     res.send("testing route");
@@ -41,6 +42,14 @@ router.get('/cartDetails',jwtMiddleware.userLoginJWT,CustomerController.getCartD
 router.post('/orderProducts',joiMiddleware.validationOrderProducts,jwtMiddleware.userLoginJWT,CustomerController.orderProducts);
 router.delete('/removeFromCart',jwtMiddleware.userLoginJWT,CustomerController.removeFromCart);
 router.post('/payment',jwtMiddleware.userLoginJWT,CustomerController.paymentAndOrder);
+
+
+
+
+
+router.post('/paypal',paypalUtil.paypal);
+router.get('/paypal/success',paypalUtil.Success);
+router.get('/paypal/cancel',paypalUtil.Cancel);
 
 // public
 router.get('/getAllProducts',CustomerController.getAllProducts);

@@ -1,0 +1,13 @@
+<h1>Faucet App</h1>
+<button type="button" class="btn btn-success" (click)="connectWallet()">Connect Wallet</button>
+<p *ngIf="newVar">Connected With:{{account}}</p>
+
+<button type="button" class="btn btn-success" (click)="getBalance()">Get Balance</button>
+
+<p>balance in contract - {{balance}}</p>
+
+<button type="button" class="btn btn-success" (click)="sendMeFaucetToken()">Send Faucet</button>
+
+
+
+<router-outlet></router-outlet>

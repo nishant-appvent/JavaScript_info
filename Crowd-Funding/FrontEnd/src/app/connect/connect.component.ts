@@ -1,0 +1,84 @@
+import { Component, OnInit } from '@angular/core';
+import { ethers } from 'ethers';
+
+@Component({
+  selector: 'app-connect',
+  templateUrl: './connect.component.html',
+  styleUrls: ['./connect.component.css']
+})
+export class ConnectComponent implements OnInit {
+
+  account:any;
+  message:any;
+  signer:any;
+  status="Connect Wallet";
+
+  constructor(){
+    // this.getCurrentWalletConnected();
+  }
+
+  ngOnInit(): void {
+      
+  }
+
+  async connectWallet() {
+    if (
+      typeof window !== 'undefined' &&
+      typeof window.ethereum !== 'undefined'
+      ) {
+      console.log("we are in");
+
+      try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const accounts = await provider.send("eth_requestAccounts",[]);
+        this.signer = provider.getSigner();
+        // this.fcContract = faucetContract(provider);
+        this.account = accounts[0];
+        this.status = "Connected : " + this.account;
+        window.ethereum.on("accountsChanged",(accounts:any)=>{
+
+          this.account = accounts[0];
+        this.status = "Connected : " + this.account;
+        console.log(this.status);
+          
+          console.log(this.account);
+          console.log("here dsafalsdkf");
+        })
+        console.log(accounts[0]);
+        this.message = 'Wallet connected';
+       
+      } catch (err: any) {
+        console.log(err.message);
+        this.message = err.message;
+      }
+    } else {
+      alert('metamask not installed.');
+    }
+
+  }
+
+
+  async getCurrentWalletConnected() {
+    if (
+      typeof window !== 'undefined' &&
+      typeof window.ethereum !== 'undefined'
+      ){
+        try{
+          const provider = new ethers.providers.Web3Provider(window.ethereum);
+          const accounts = await provider.send("eth_accounts",[]);
+          if(accounts.length>0){
+            this.signer = provider.getSigner();
+            // this.fcContract = faucetContract(provider);
+            this.account = accounts[0];
+            this.status = "Connected : " + this.account;
+            console.log(accounts[0])
+          } else{
+            console.log("Connect to Metamask using connect Button")
+          }
+        } catch(err:any){
+          console.log(err.message);
+        }
+      }
+    }
+
+}

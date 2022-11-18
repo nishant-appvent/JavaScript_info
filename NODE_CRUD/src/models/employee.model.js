@@ -26,6 +26,7 @@ Employee.getAllEmployees = (result) => {
   });
 };
 
+
 // get employee by ID from DB
 
 // Employee.getEmployeeByID = async(id)=>{

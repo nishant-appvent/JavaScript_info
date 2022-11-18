@@ -876,7 +876,6 @@ addBulkCart = async (req, res) => {
 };
 
 
-
 module.exports = {
   registerCustomer,
   sendOtp,

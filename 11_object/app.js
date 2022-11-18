@@ -240,21 +240,57 @@
 
 
 
-let user = { // belongs to another code
-  name: "John"
-};
+// let user = { // belongs to another code
+//   name: "John"
+// };
 
-let id = Symbol("id");
+// let id = Symbol("id");
 
-user[id] = 1;
+// user[id] = 1;
 
-console.log(user[id]);
+// console.log(user[id]);
 
 
-{
-let id = Symbol("id");
+// {
+// let id = Symbol("id");
 
-user[id] = "Their id value";
+// user[id] = "Their id value";
+// }
+
+// console.log(user);
+
+
+// class example{
+
+//   constructor(){
+
+//   }
+// }
+
+// function a() {
+//   c()
+//   function c(){
+//     console.log(b);
+//   }
+// }
+// const b = 12;
+// a();
+// var a = 32;
+// {
+//   let a = 20;
+//   console.log(a);
+// }
+
+// console.log(a);
+
+
+function y(){
+  var i = 45;
+  setTimeout(function (){
+    console.log(i);
+  },3000);
+  console.log("hello Javascript.")
 }
 
-console.log(user);
+y();
+
