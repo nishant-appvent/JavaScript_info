@@ -8,7 +8,6 @@ async function main() {
   console.log("CrowdFunding deployed ", crowdFunding.address);
 }
 
-
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
