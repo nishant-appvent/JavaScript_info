@@ -16,12 +16,13 @@ export class CampaignDetailComponent implements OnInit {
   target:any;
   deadline:any;
   minimumAmount:any;
+  noOfVoters:any;
   
   constructor() { 
-    this.details();
   }
   
   ngOnInit(): void {
+    this.details();
   }
 
   async details(){
@@ -30,20 +31,41 @@ export class CampaignDetailComponent implements OnInit {
       typeof window.ethereum !== 'undefined'
       ) {
       console.log("we are in");
-
       try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         this.signer = provider.getSigner();
         this.CFContract = crowdFundContract(provider);
         const CFContractWithSigner = this.CFContract.connect(this.signer) ;
-        const resp = await CFContractWithSigner.getBalance();
-        const resp2 = await CFContractWithSigner.getContributorsArr();
-        // const resp3 = await CFContractWithSigner.minContribution();
+        const raisedContributionResp = await CFContractWithSigner.raisedContribution();
+        const descriptionResp = await CFContractWithSigner.description();
+        const minContResp = await CFContractWithSigner.minContribution();
+        const targetResp = await CFContractWithSigner.target();
+        const noOfVotersResponse = await CFContractWithSigner.noOfVoters();
+        const deadlineResponse = await CFContractWithSigner.deadline();
 
-        console.log(resp.toNumber());
-        this.raisedFund = resp.toNumber();
-        console.log(resp2);
-        // console.log(resp3);
+        this.raisedFund = raisedContributionResp.toNumber();
+        console.log(this.raisedFund);
+        this.description = descriptionResp;
+        console.log(descriptionResp);
+        this.minimumAmount = minContResp.toNumber()/10**18;
+        console.log(this.minimumAmount);
+        this.target = targetResp/(10**18);
+        this.noOfVoters = noOfVotersResponse.toNumber();
+        console.log(noOfVotersResponse);
+        console.log(deadlineResponse.toNumber());
+
+        let milliseconds = deadlineResponse.toNumber();
+        // let milliseconds = Date.now();
+        console.log(milliseconds);
+        let myDate = new Date( milliseconds);
+
+        // using various methods of Date class to get year, date, month, hours, minutes, and seconds.
+
+        this.deadline = myDate.toLocaleString();
+        
+        // const today = new Date(deadlineResponse.toNumber());
+        // this.deadline = today.toDateString();
+        console.log(this.deadline);
         // this.account = accounts[0];
         // console.log(accounts[0]);
         // this.message = 'Wallet connected';

@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ethers } from 'ethers';
+import { DataTransferServiceService } from '../services/data-transfer-service.service';
 
 @Component({
   selector: 'app-connect',
   templateUrl: './connect.component.html',
   styleUrls: ['./connect.component.css']
 })
+
 export class ConnectComponent implements OnInit {
 
   account:any;
@@ -13,7 +15,7 @@ export class ConnectComponent implements OnInit {
   signer:any;
   status="Connect Wallet";
 
-  constructor(){
+  constructor(private dataService:DataTransferServiceService){
     // this.getCurrentWalletConnected();
   }
 
@@ -46,7 +48,7 @@ export class ConnectComponent implements OnInit {
         })
         console.log(accounts[0]);
         this.message = 'Wallet connected';
-       
+        this.dataService.putDataToStream({account:this.account});
       } catch (err: any) {
         console.log(err.message);
         this.message = err.message;

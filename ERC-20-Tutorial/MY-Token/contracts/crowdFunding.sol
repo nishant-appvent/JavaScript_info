@@ -1,25 +1,24 @@
 
-pragma solidity ^0.8.17;
 // // SPDX-License-Identifier: MIT
+pragma solidity ^0.8.17;
 contract crowdFunding{
-
     mapping(address=>uint) public contributors;
-    address[] contributorsArr;
+    address[] public contributorsArr;
     address public manager;
     address payable public receipent;
-    string description;
+    string public  description;
     bool public active;
     uint public noOfVoters;
     mapping(address=>bool) public voters;
     uint public target;
-    uint  deadline;
-    uint minContribution;
+    uint public deadline;
+    uint public minContribution;
     uint public contributorsCount;
     uint public raisedContribution;
 
     constructor() {
         active = false;
-        minContribution = 0.001 ether;
+        minContribution = 1 * (10**15);
         manager = msg.sender;
     }
 
@@ -29,7 +28,7 @@ contract crowdFunding{
     }
 
     modifier isNotCompleted(){
-        require(active==true,"Campaign already completed");
+        require(active==true,"Campaign not in run.");
         _;
     }
 
@@ -37,7 +36,7 @@ contract crowdFunding{
         require(address(this).balance==0,"Contract still in use.");
         require(active == false, "contract already in use");
         active = true;
-        target = (_target) * 1 ether;
+        target = _target;
         deadline = block.timestamp + (_deadline*1 minutes) ;
         description = _desc;
         receipent = payable(_add);
@@ -57,7 +56,7 @@ contract crowdFunding{
 
     function sendEther() public payable isNotCompleted {
         require(msg.value >= minContribution,"minimum requirement didn't met");
-        require(target + 0.1 ether >= msg.value + raisedContribution ,"Total amount getting greater than target fund");
+        require(target + minContribution >= msg.value + raisedContribution ,"Total amount getting greater than target fund");
         require(block.timestamp < deadline,"Deadline reached");
         if(contributors[msg.sender]==0){
             contributorsCount++;
