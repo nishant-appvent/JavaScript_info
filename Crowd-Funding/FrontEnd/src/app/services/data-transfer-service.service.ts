@@ -7,7 +7,7 @@ export class DataTransferServiceService {
   
  
   
-    private _dataStream = new BehaviorSubject({});
+    public _dataStream = new BehaviorSubject<any>('false');
     constructor() { }
   
     getDataStream(){

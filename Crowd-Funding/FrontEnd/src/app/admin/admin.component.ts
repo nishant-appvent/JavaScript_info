@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ethers } from 'ethers';
 import crowdFundContract from '../crowdFunding';
+import { DataTransferServiceService } from '../services/data-transfer-service.service';
 
 @Component({
   selector: 'app-admin',
@@ -12,12 +13,13 @@ export class AdminComponent implements OnInit {
   signer:any;
   CFContract:any;
 
-  constructor(private router:Router) { }
+  constructor(private router:Router,public subjectService:DataTransferServiceService) { }
 
   ngOnInit(): void {
   }
 
   setCampaign(){
+    this.subjectService.putDataToStream('true');
     this.router.navigate(['./admin/campaignSetter']);
   }
 
@@ -28,6 +30,9 @@ export class AdminComponent implements OnInit {
         const CFContractWithSigner = this.CFContract.connect(this.signer) ;
         const refundResponse=await CFContractWithSigner.adminRefund();
         console.log(refundResponse);
+        const refundFinalResponse = await refundResponse.wait();
+        console.log(refundFinalResponse);
+        this.subjectService.putDataToStream('true');
   }
 
   async makePayment() {
@@ -37,6 +42,9 @@ export class AdminComponent implements OnInit {
         const CFContractWithSigner = this.CFContract.connect(this.signer) ;
         const makePaymentResponse=await CFContractWithSigner.makePayment();
         console.log(makePaymentResponse);
+        const makePaymentFinalResponse = await makePaymentResponse.wait();
+        console.log(makePaymentFinalResponse);
+        this.subjectService.putDataToStream('true');
   }
 
   async contributorsArr() {
@@ -47,10 +55,5 @@ export class AdminComponent implements OnInit {
         const contriResponse=await CFContractWithSigner.getContributorsArr();
         console.log(contriResponse);
   }
-
-  
-
-
-
 
 }

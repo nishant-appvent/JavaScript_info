@@ -15,17 +15,9 @@ export class CampaignSetterComponent implements OnInit {
   signer:any;
   CFContract:any;
 
-  constructor(private dataService:DataTransferServiceService) {
-    const data = this.dataService.getDataStream();
-    data.subscribe({
-      next:(data:any)=>{
-        this.account = data.account;
-      },error:(err:any)=>{
-        console.log(err);
-      }
-    });
+  constructor(private subjectService:DataTransferServiceService) {
+    
    }
-
   ngOnInit(): void {
   }
 
@@ -46,7 +38,7 @@ export class CampaignSetterComponent implements OnInit {
     const CFContractWithSigner = this.CFContract.connect(this.signer) ;
     const raisedContributionResp = await CFContractWithSigner.contractSetter(target, deadline, receipent, description);
     console.log(raisedContributionResp);
-
+    this.subjectService.putDataToStream('true');
   }
 
 }

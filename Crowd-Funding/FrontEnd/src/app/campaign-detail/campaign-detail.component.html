@@ -6,8 +6,14 @@
         <li class="list-group-item">Target : {{target}} </li>
         <li class="list-group-item">RaisedFund : {{raisedFund}}</li>
         <li class="list-group-item">Deadline : {{deadline}} </li>
-        <li class="list-group-item">Minimum Donation :{{minimumAmount}} eth </li>
+        <li  class="list-group-item"> Minimum Donation :
+          <span *ngIf="minimumAmount; else alternateTemp">
+           {{minimumAmount}} eth
+          </span>
+          <ng-template #alternateTemp><span > --- </span></ng-template>
+          </li>
         <li class="list-group-item">Acquired Votes :{{noOfVoters}} </li>
+        <li class="list-group-item">random no : {{random}} </li>
       </ul>
     </div>
 </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ethers } from 'ethers';
 import { DataTransferServiceService } from '../services/data-transfer-service.service';
 
@@ -15,8 +15,8 @@ export class ConnectComponent implements OnInit {
   signer:any;
   status="Connect Wallet";
 
-  constructor(private dataService:DataTransferServiceService){
-    // this.getCurrentWalletConnected();
+  constructor(private cdRef: ChangeDetectorRef){
+     this.getCurrentWalletConnected();
   }
 
   ngOnInit(): void {
@@ -37,18 +37,9 @@ export class ConnectComponent implements OnInit {
         // this.fcContract = faucetContract(provider);
         this.account = accounts[0];
         this.status = "Connected : " + this.account;
-        window.ethereum.on("accountsChanged",(accounts:any)=>{
-
-          this.account = accounts[0];
-        this.status = "Connected : " + this.account;
-        console.log(this.status);
-          
-          console.log(this.account);
-          console.log("here dsafalsdkf");
-        })
         console.log(accounts[0]);
         this.message = 'Wallet connected';
-        this.dataService.putDataToStream({account:this.account});
+        
       } catch (err: any) {
         console.log(err.message);
         this.message = err.message;
@@ -74,6 +65,16 @@ export class ConnectComponent implements OnInit {
             this.account = accounts[0];
             this.status = "Connected : " + this.account;
             console.log(accounts[0])
+            window.ethereum.on("accountsChanged",(accounts:any)=>{
+
+              this.account = accounts[0];
+              this.status = "Connected : " + this.account;
+              console.log(this.status);
+                
+                console.log(this.account);
+                console.log("here dsafalsdkf");
+                this.cdRef.detectChanges();
+              })
           } else{
             console.log("Connect to Metamask using connect Button")
           }

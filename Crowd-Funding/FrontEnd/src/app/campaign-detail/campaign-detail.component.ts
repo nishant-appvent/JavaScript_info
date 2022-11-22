@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import crowdFundContract from '../crowdFunding';
 import { ethers } from 'ethers';
+import * as moment from 'moment';
+import { DataTransferServiceService } from '../services/data-transfer-service.service';
 
 
 @Component({
@@ -17,12 +19,20 @@ export class CampaignDetailComponent implements OnInit {
   deadline:any;
   minimumAmount:any;
   noOfVoters:any;
-  
-  constructor() { 
+  random:any;
+  refreshTrigger:any
+  constructor(public subjectService:DataTransferServiceService) { 
   }
   
   ngOnInit(): void {
     this.details();
+    this.subjectService._dataStream.subscribe((res:any)=>{
+      console.log(res);
+      if(res=='true'){
+        this.details();
+      }
+    })
+    
   }
 
   async details(){
@@ -43,32 +53,25 @@ export class CampaignDetailComponent implements OnInit {
         const noOfVotersResponse = await CFContractWithSigner.noOfVoters();
         const deadlineResponse = await CFContractWithSigner.deadline();
 
-        this.raisedFund = raisedContributionResp.toNumber();
-        console.log(this.raisedFund);
+        this.raisedFund = raisedContributionResp.toNumber()/10**18;
+        // console.log(this.raisedFund);
         this.description = descriptionResp;
-        console.log(descriptionResp);
+        // console.log(descriptionResp);
         this.minimumAmount = minContResp.toNumber()/10**18;
-        console.log(this.minimumAmount);
+        // console.log(this.minimumAmount);
         this.target = targetResp/(10**18);
         this.noOfVoters = noOfVotersResponse.toNumber();
-        console.log(noOfVotersResponse);
-        console.log(deadlineResponse.toNumber());
+        // console.log(this.noOfVoters);
+        // console.log(deadlineResponse);
+        // console.log(deadlineResponse.toNumber());
+        const expTime = deadlineResponse.toNumber();
+        if(expTime){
+        this.deadline = moment.unix(expTime);}
+        else{
+          this.deadline = "";
+        }
+        this.random = Math.random();
 
-        let milliseconds = deadlineResponse.toNumber();
-        // let milliseconds = Date.now();
-        console.log(milliseconds);
-        let myDate = new Date( milliseconds);
-
-        // using various methods of Date class to get year, date, month, hours, minutes, and seconds.
-
-        this.deadline = myDate.toLocaleString();
-        
-        // const today = new Date(deadlineResponse.toNumber());
-        // this.deadline = today.toDateString();
-        console.log(this.deadline);
-        // this.account = accounts[0];
-        // console.log(accounts[0]);
-        // this.message = 'Wallet connected';
        
       } catch (err: any) {
         console.log(err.message);
