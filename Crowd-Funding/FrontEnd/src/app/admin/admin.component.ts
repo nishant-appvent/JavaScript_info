@@ -12,6 +12,7 @@ import { DataTransferServiceService } from '../services/data-transfer-service.se
 export class AdminComponent implements OnInit {
   signer:any;
   CFContract:any;
+  arr:any=[];
 
   constructor(private router:Router,public subjectService:DataTransferServiceService) { }
 
@@ -54,6 +55,21 @@ export class AdminComponent implements OnInit {
         const CFContractWithSigner = this.CFContract.connect(this.signer) ;
         const contriResponse=await CFContractWithSigner.getContributorsArr();
         console.log(contriResponse);
+        for(let i=0;i<contriResponse.length;i++){
+        const amount = await this.contributorsMap(contriResponse[i]);
+        const val = contriResponse[i] +" : " + amount/10**18;
+        this.arr.push(val);
+      }
+  }
+
+  async contributorsMap(address:any) {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+        this.signer = provider.getSigner();
+        this.CFContract = crowdFundContract(provider);
+        const CFContractWithSigner = this.CFContract.connect(this.signer) ;
+        const contriResponse=await CFContractWithSigner.contributors(address);
+        // console.log(contriResponse);
+        return contriResponse.toNumber()
   }
 
 }

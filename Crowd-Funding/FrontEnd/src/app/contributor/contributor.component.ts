@@ -36,7 +36,7 @@ export class ContributorComponent implements OnInit {
     const CFContractWithSigner = this.CFContract.connect(this.signer);
     // const value = BigInt(val*)).toString();
     const voteResponse = await CFContractWithSigner.voteRequest();
-    console.log(voteResponse.toNumber());
+    console.log(voteResponse);
     const voteFinalResponse = await voteResponse.wait();
     console.log(voteFinalResponse);
     this.subjectService.putDataToStream('true');

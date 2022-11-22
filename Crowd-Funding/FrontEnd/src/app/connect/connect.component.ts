@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ethers } from 'ethers';
-import { DataTransferServiceService } from '../services/data-transfer-service.service';
+
 
 @Component({
   selector: 'app-connect',
@@ -37,7 +37,7 @@ export class ConnectComponent implements OnInit {
         // this.fcContract = faucetContract(provider);
         this.account = accounts[0];
         this.status = "Connected : " + this.account;
-        console.log(accounts[0]);
+        // console.log(accounts[0]);
         this.message = 'Wallet connected';
         
       } catch (err: any) {
@@ -64,7 +64,7 @@ export class ConnectComponent implements OnInit {
             // this.fcContract = faucetContract(provider);
             this.account = accounts[0];
             this.status = "Connected : " + this.account;
-            console.log(accounts[0])
+            // console.log(accounts[0])
             window.ethereum.on("accountsChanged",(accounts:any)=>{
 
               this.account = accounts[0];
