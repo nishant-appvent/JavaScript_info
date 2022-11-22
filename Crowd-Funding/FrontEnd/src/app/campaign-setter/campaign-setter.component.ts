@@ -26,18 +26,20 @@ export class CampaignSetterComponent implements OnInit {
     const target = BigInt(obj.target*(10**18));
     const receipent = obj.receipent;
     const description = obj.description;
-    console.log(obj.deadline);
-    console.log(obj.target);
-    console.log(obj.receipent);
-    console.log(obj.description);
-    console.log(obj);
+    // console.log(obj.deadline);
+    // console.log(obj.target);
+    // console.log(obj.receipent);
+    // console.log(obj.description);
+    // console.log(obj);
 
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     this.signer = provider.getSigner();
     this.CFContract = crowdFundContract(provider);
     const CFContractWithSigner = this.CFContract.connect(this.signer) ;
-    const raisedContributionResp = await CFContractWithSigner.contractSetter(target, deadline, receipent, description);
-    console.log(raisedContributionResp);
+    const setContractResp = await CFContractWithSigner.contractSetter(target, deadline, receipent, description);
+    console.log(setContractResp);
+    const setContractFinalResp = await setContractResp.wait();
+    console.log(setContractFinalResp);
     this.subjectService.putDataToStream('true');
   }
 
