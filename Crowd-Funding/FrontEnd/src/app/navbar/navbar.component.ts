@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { DataTransferServiceService } from '../services/data-transfer-service.service';
 
 @Component({
   selector: 'app-navbar',
@@ -8,17 +9,19 @@ import { Router } from '@angular/router';
 })
 export class NavbarComponent implements OnInit {
 
-  constructor(private router:Router) { }
+  constructor(private router:Router,private subjectService:DataTransferServiceService) { }
 
   ngOnInit(): void {
   }
 
   adminPage(){
+    this.subjectService.putDataToStream('true');
     this.router.navigate(['./admin']);
   }
 
   contributorPage(){
-    this.router.navigate(['./contributor'])
+    this.subjectService.putDataToStream('true');
+    this.router.navigate(['./contributor']);
   }
 
 }

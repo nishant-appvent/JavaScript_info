@@ -84,8 +84,16 @@ contract crowdFunding{
             if(amount!=0){
             payable(contributorsArr[i]).transfer(amount);
             }
-            active = false;
         }
+        active = false;
+        noOfVoters = 0;
+        contributorsCount = 0;
+        delete contributorsArr;
+        raisedContribution = 0;
+        target = 0;
+        deadline = 0 ;
+        description = "";
+        receipent = payable(address(0));
     }
 
     function voteRequest () public isNotCompleted{
@@ -105,5 +113,13 @@ contract crowdFunding{
         }
         receipent.transfer(address(this).balance);
         active = false;
+        noOfVoters = 0;
+        contributorsCount = 0;
+        delete contributorsArr;
+        raisedContribution = 0;
+        target = 0;
+        deadline = 0;
+        description = "";
+        receipent = payable(address(0));
     }
 }
