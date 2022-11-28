@@ -21,13 +21,14 @@ export class CampaignDetailComponent implements OnInit {
   noOfVoters:any;
   random:any;
   refreshTrigger:any
+  receipent:any;
   constructor(public subjectService:DataTransferServiceService) { 
   }
   
   ngOnInit(): void {
     this.details();
     this.subjectService._dataStream.subscribe((res:any)=>{
-      console.log(res);
+      // console.log(res);
       if(res=='true'){
         this.details();
       }
@@ -40,39 +41,43 @@ export class CampaignDetailComponent implements OnInit {
       typeof window !== 'undefined' &&
       typeof window.ethereum !== 'undefined'
       ) {
-      console.log("we are in");
+      // console.log("we are in");
       try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const account = await provider.send("eth_accounts",[]);
+        if(account.length===0){
+          console.log("Connect the account first");
+          return ;
+        }
+        // console.log(provider);
         this.signer = provider.getSigner();
+        // console.log(this.signer);
         this.CFContract = crowdFundContract(provider);
-        const CFContractWithSigner = this.CFContract.connect(this.signer) ;
-        const raisedContributionResp = await CFContractWithSigner.raisedContribution();
-        const descriptionResp = await CFContractWithSigner.description();
-        const minContResp = await CFContractWithSigner.minContribution();
-        const targetResp = await CFContractWithSigner.target();
-        const noOfVotersResponse = await CFContractWithSigner.noOfVoters();
-        const deadlineResponse = await CFContractWithSigner.deadline();
 
-        this.raisedFund = raisedContributionResp.toNumber()/10**18;
-        // console.log(this.raisedFund);
+        // console.log(this.CFContract);
+        
+        const CFContractWithSigner = this.CFContract.connect(this.signer) ;
+        // console.log(CFContractWithSigner);
+        const raisedContributionResp = await CFContractWithSigner.raisedContribution();
+        this.raisedFund = (raisedContributionResp.toString()/10**18);
+        const descriptionResp = await CFContractWithSigner.description();
         this.description = descriptionResp;
-        // console.log(descriptionResp);
-        this.minimumAmount = minContResp.toNumber()/10**18;
-        // console.log(this.minimumAmount);
+        const minContResp = await CFContractWithSigner.minContribution();
+        this.minimumAmount = minContResp.toString()/10**18;
+        const targetResp = await CFContractWithSigner.target();
         this.target = targetResp/(10**18);
+        const noOfVotersResponse = await CFContractWithSigner.noOfVoters();
         this.noOfVoters = noOfVotersResponse.toNumber();
-        // console.log(this.noOfVoters);
-        // console.log(deadlineResponse);
-        // console.log(deadlineResponse.toNumber());
+        const deadlineResponse = await CFContractWithSigner.deadline();
         const expTime = deadlineResponse.toNumber();
         if(expTime){
         this.deadline = moment.unix(expTime);}
         else{
           this.deadline = "";
         }
+        const receipentResponse = await CFContractWithSigner.receipent();
+        this.receipent = receipentResponse;
         this.random = Math.random();
-
-       
       } catch (err: any) {
         console.log(err.message);
       }

@@ -1,0 +1,23 @@
+<div class="card">
+    <h5 class="card-header">Featured</h5>
+    <div class="card" style="width: 18rem;">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">Description : {{description}}</li>
+        <li class="list-group-item">Target : {{target}} </li>
+        <li class="list-group-item">RaisedFund : {{raisedFund}}</li>
+        <li class="list-group-item">Funding-Deadline/Voting Start time  : {{fundDeadline}} </li>
+        <li class="list-group-item">Voting-Deadline : {{voteDeadline}} </li>
+        <li class="list-group-item">Receipent : {{receipent}} </li>
+        <li  class="list-group-item"> Minimum Donation :
+          <span *ngIf="minimumAmount; else alternateTemp">
+           {{minimumAmount}} eth
+          </span>
+          <ng-template #alternateTemp><span > --- </span></ng-template>
+          </li>
+        <li class="list-group-item">Acquired Votes :{{noOfVoters}} </li>
+        <li class="list-group-item">random no : {{random}} </li>
+      </ul>
+    </div>
+</div>
+
+
