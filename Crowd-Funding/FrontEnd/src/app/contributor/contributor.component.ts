@@ -16,30 +16,36 @@ export class ContributorComponent implements OnInit {
   ngOnInit(): void { }
 
   async sendEther(val: any) {
+    try{
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     this.signer = provider.getSigner();
     this.CFContract = crowdFundContract(provider);
     const CFContractWithSigner = this.CFContract.connect(this.signer);
-    // const value = BigInt(val*)).toString();
     const sendEthResponse = await CFContractWithSigner.sendEther({
       value: ethers.utils.parseEther(val),
     });
     console.log(sendEthResponse);
-    console.log(await sendEthResponse.wait());
-    this.subjectService.putDataToStream('true');
+    console.log(await sendEthResponse.wait());}
+    catch(err:any){
+      console.log(err);
+    } finally {
+    this.subjectService.putDataToStream('true');}
   }
 
   async vote() {
+    try{
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     this.signer = provider.getSigner();
     this.CFContract = crowdFundContract(provider);
     const CFContractWithSigner = this.CFContract.connect(this.signer);
-    // const value = BigInt(val*)).toString();
     const voteResponse = await CFContractWithSigner.voteRequest();
     console.log(voteResponse);
     const voteFinalResponse = await voteResponse.wait();
     console.log(voteFinalResponse);
-    this.subjectService.putDataToStream('true');
+  } catch(err:any){
+    console.log(err.message);
+  } finally{
+    this.subjectService.putDataToStream('true');}
   }
 
   

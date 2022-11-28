@@ -2,6 +2,7 @@
 // // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 contract crowdFunding{
+
     mapping(address=>uint) public contributors;
     address[] public contributorsArr;
     address public manager;
@@ -11,7 +12,8 @@ contract crowdFunding{
     uint public noOfVoters;
     mapping(address=>bool) public voters;
     uint public target;
-    uint public deadline;
+    uint public fundDeadline;
+    uint public voteDeadline;
     uint public minContribution;
     uint public contributorsCount;
     uint public raisedContribution;
@@ -32,12 +34,13 @@ contract crowdFunding{
         _;
     }
 
-    function contractSetter(uint _target,uint _deadline, address _add,string memory _desc)public onlyManager {
+    function contractSetter(uint _target,uint _fundDeadline,uint _voteDeadline, address _add,string memory _desc)public onlyManager {
         require(address(this).balance==0,"Contract still in use.");
         require(active == false, "contract already in use");
         active = true;
         target = _target;
-        deadline = block.timestamp + (_deadline*1 minutes) ;
+        fundDeadline = block.timestamp + (_fundDeadline*1 minutes) ;
+        voteDeadline = fundDeadline + (_voteDeadline*1 minutes);
         description = _desc;
         receipent = payable(_add);
         noOfVoters = 0;
@@ -56,8 +59,7 @@ contract crowdFunding{
 
     function sendEther() public payable isNotCompleted {
         require(msg.value >= minContribution,"minimum requirement didn't met");
-        require(target + minContribution >= msg.value + raisedContribution ,"Total amount getting greater than target fund");
-        require(block.timestamp < deadline,"Deadline reached");
+        require(block.timestamp < fundDeadline,"Deadline reached for sending fund.");
         if(contributors[msg.sender]==0){
             contributorsCount++;
         }
@@ -91,22 +93,27 @@ contract crowdFunding{
         delete contributorsArr;
         raisedContribution = 0;
         target = 0;
-        deadline = 0 ;
+        voteDeadline = 0 ;
+        fundDeadline = 0 ;
         description = "";
         receipent = payable(address(0));
     }
 
     function voteRequest () public isNotCompleted{
         require(contributors[msg.sender]>0,"You must be a contributor");
+        require(block.timestamp > fundDeadline,"Voting hasn't started yet.");
         require(voters[msg.sender] == false,"You have already voted");
+        require(block.timestamp < voteDeadline,"Voting is over.");
+        require(raisedContribution>=target,"Insufficient fund, Voting can't proceed.");
         voters[msg.sender] = true;
         noOfVoters++;
     }
 
     function makePayment () public payable onlyManager isNotCompleted{
+        require(block.timestamp > voteDeadline,"Deadline of campaign isn't over yet.");
         require(raisedContribution >= target,"Current balance is less than target balance");
-        require(block.timestamp < deadline,"Deadline to fetch fund is over.");
         require(noOfVoters >contributorsCount/2,"Insuffiecient Votes.");
+        require(receipent!=(address(0)),"Receipent address is not valid.");
         for(uint i; i<contributorsCount;i++){
             contributors[contributorsArr[i]] = 0;
             voters[contributorsArr[i]] = false;
@@ -118,7 +125,8 @@ contract crowdFunding{
         delete contributorsArr;
         raisedContribution = 0;
         target = 0;
-        deadline = 0;
+        voteDeadline = 0 ;
+        fundDeadline = 0 ;
         description = "";
         receipent = payable(address(0));
     }
