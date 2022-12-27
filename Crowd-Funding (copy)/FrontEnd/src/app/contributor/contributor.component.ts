@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ethers } from 'ethers';
 import crowdFundContract from '../crowdFunding';
 import { DataTransferServiceService } from '../services/data-transfer-service.service';
+import { NgxUiLoaderService } from "ngx-ui-loader"; 
 
 
 @Component({
@@ -10,9 +11,10 @@ import { DataTransferServiceService } from '../services/data-transfer-service.se
   styleUrls: ['./contributor.component.css'],
 })
 export class ContributorComponent implements OnInit {
-  constructor(public subjectService:DataTransferServiceService) { }
+  constructor(public subjectService:DataTransferServiceService, public _loader:NgxUiLoaderService) { }
   signer: any;
   CFContract: any;
+  err:any;
   ngOnInit(): void { }
 
   async sendEther(val: any) {
@@ -25,9 +27,14 @@ export class ContributorComponent implements OnInit {
       value: ethers.utils.parseEther(val),
     });
     console.log(sendEthResponse);
-    console.log(await sendEthResponse.wait());}
+    this._loader.start();
+    console.log(await sendEthResponse.wait());
+    this._loader.stop();
+  }
     catch(err:any){
+      this.err = err.reason;
       console.log(err);
+      
     } finally {
     this.subjectService.putDataToStream('true');}
   }
@@ -40,10 +47,13 @@ export class ContributorComponent implements OnInit {
     const CFContractWithSigner = this.CFContract.connect(this.signer);
     const voteResponse = await CFContractWithSigner.voteRequest();
     console.log(voteResponse);
+    this._loader.start();
     const voteFinalResponse = await voteResponse.wait();
+    this._loader.stop();
     console.log(voteFinalResponse);
   } catch(err:any){
     console.log(err.message);
+    this.err = err.reason;
   } finally{
     this.subjectService.putDataToStream('true');}
   }

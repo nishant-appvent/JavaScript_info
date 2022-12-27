@@ -9,17 +9,14 @@
 
 // // user.isAdmin = true;
 
-
 // // console.log(user);
 // // delete user.age;
 
 // // console.log(user);
 // // // console.log(a);
 
-
 // // let key = prompt("What","name")
 // // console.log(user[key]);
-
 
 // let user = {};
 
@@ -35,7 +32,6 @@
 // delete user.name;
 
 // console.log(user);
-
 
 // let salaries = {
 //   John: 100,
@@ -53,12 +49,11 @@
 
 // function multiplyNumeric(obj){
 //   for(let key in obj){
-//     if (typeof obj[key] == 'number') 
-//    obj[key] = 2 * obj[key]; 
+//     if (typeof obj[key] == 'number')
+//    obj[key] = 2 * obj[key];
 //   }
-  
-// }
 
+// }
 
 // let menu = {
 //   width: 200,
@@ -68,28 +63,22 @@
 
 // multiplyNumeric(menu);
 
-
 // console.log(menu);
 
-
 // let a = {age:7};
-// let b = {age:7}; 
+// let b = {age:7};
 
 // console.log( a == b );
 // console.log( a === b );
-
 
 // let assignEx = { name: "John" };
 
 // let permissions1 = { canView: true };
 // let permissions2 = { canEdit: true };
 
-
 // Object.assign(assignEx, permissions1, permissions2);
 
 // console.log(assignEx);
-
-
 
 // let leaveForIn = {
 //   name: "John",
@@ -100,8 +89,6 @@
 
 // console.log(clone);
 
-
-
 // let objectMethod = {
 //   sayHi: function(){
 //     console.log("through function keyWord");
@@ -110,9 +97,6 @@
 
 // objectMethod.sayHi();
 
-
-
-
 // let objectMethod_2 = {
 //   sayHi(){
 //     console.log("without function keyword");
@@ -120,8 +104,6 @@
 // }
 
 // objectMethod_2.sayHi();
-
-
 
 // let thisEx = {
 //   name : "Eric",
@@ -134,8 +116,6 @@
 
 // thisEx.showDetail();
 
-
-
 // let thisEx_2 = {
 //   name: "Bro",
 //   age: 30,
@@ -146,14 +126,12 @@
 
 // };
 
-
 // let admin_2= thisEx_2;
-// thisEx_2 = null; 
+// thisEx_2 = null;
 
 // console.log(admin_2.name);
 // // console.log(thisEx_2.name);
 // admin_2.sayHi();
-
 
 // let firstThis = {name:"Desmond"};
 // let secondThis = {name:"Ezio"};
@@ -164,16 +142,12 @@
 // firstThis.f = callName;
 // secondThis.f = callName;
 
-
 // firstThis.f();
 // secondThis.f();
 
 // console.log("----------");
 
-
-
 // // Error - ref as a fucntion will work
-
 
 // // function makeUser() {
 // //   return {
@@ -186,12 +160,10 @@
 
 // // console.log( val.ref.name );
 
-
-
 // // Create Calculator
 
 // let calc = {
- 
+
 //   read : function() {
 //     this.a = +prompt("a = ");
 //     this.b = +prompt("b = ");
@@ -203,15 +175,12 @@
 //   mul: function() {
 //     return this.a * this.b;
 //   }
-  
-// }
 
+// }
 
 // calc.read();
 // console.log(calc.sum());
 // console.log(calc.mul());
-
-
 
 // // let ladder = {
 // //   step: 0,
@@ -229,16 +198,13 @@
 // //   }
 // // };
 
-
 // // ladder.up();
 // // ladder.up();
-// // ladder.down();
-// // ladder.showStep(); 
 // // ladder.down();
 // // ladder.showStep();
-// // ladder.up().up().showStep().down().showStep().down().showStep(); 
-
-
+// // ladder.down();
+// // ladder.showStep();
+// // ladder.up().up().showStep().down().showStep().down().showStep();
 
 // let user = { // belongs to another code
 //   name: "John"
@@ -250,7 +216,6 @@
 
 // console.log(user[id]);
 
-
 // {
 // let id = Symbol("id");
 
@@ -258,7 +223,6 @@
 // }
 
 // console.log(user);
-
 
 // class example{
 
@@ -283,14 +247,48 @@
 
 // console.log(a);
 
+// function y(){
+//   var i = 45;
+//   setTimeout(function (){
+//     console.log(i);
+//   },3000);
+//   console.log("hello Javascript.")
+// }
 
-function y(){
-  var i = 45;
-  setTimeout(function (){
-    console.log(i);
-  },3000);
-  console.log("hello Javascript.")
-}
+// y();
 
-y();
+// function y(n){
+//   if(n==0){
+//     return 1;
+//   }
+//   return n * (y(n-1));
+// }
 
+// console.log(y(169));
+
+// console.log("Checkpoint");
+// function y() {
+//   return new Promise((resolve, reject) => {
+    
+//     setTimeout(function (){
+//       let startTime = new Date();
+//       startTime = startTime.getTime();
+//       let endTime = startTime + 5000;
+//         while (startTime < endTime) {
+          
+//           startTime = new Date().getTime();
+//         }
+//         console.log("----------");
+//         resolve("Checkpoint-3");
+//       },5000);
+    
+//   });
+// }
+// console.log(y());
+// y().then((er)=>{
+//   console.log(er);
+// }).catch((we)=>{
+//   console.log(we);
+// })
+
+// console.log("Checkpoint-2");

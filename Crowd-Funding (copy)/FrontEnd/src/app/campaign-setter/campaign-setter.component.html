@@ -1,35 +1,36 @@
-<h1>{{account}}</h1>
-
-<form (ngSubmit)="createCampaign(form.value)" #form="ngForm">
+<div *ngIf="err;" class="alert">
+    <span>{{err}} &nbsp;&nbsp;</span>
+     <img src="../../assets/img/aaa.png" class="icon" alt="Not" (click)="err=''">
+</div>
+<form [formGroup]="setterForm" (ngSubmit)="createCampaign()" >
     <div class="row mb-3">
         <label for="inputTarget" class="col-sm-2 col-form-label">Target Fund</label>
         <div class="col-sm-6">
-            <input ngModel type="text" class="form-control" id="inputTarget" name="target">
+            <input ngModel type="number" class="form-control" id="inputTarget" formControlName="target" placeholder="Target Amount in Ethers">
         </div>
     </div>
     <div class="row mb-3">
-        <label for="inputFundDeadline" class="col-sm-2 col-form-label">Funding Deadline (in minutes)</label>
+        <label for="inputFundDeadline" class="col-sm-2 col-form-label">Funding Deadline</label>
         <div class="col-sm-6">
-            <input ngModel type="text" class="form-control" id="inputFundDeadline" name="fundDeadline">
+            <input ngModel type="number" class="form-control" id="inputFundDeadline" formControlName="fundDeadline" placeholder="Funding Over Time in minutes">
         </div>
     </div>
     <div class="row mb-3">
-        <label for="inputVoteDeadline" class="col-sm-2 col-form-label">Voting Deadline (in minutes)</label>
+        <label for="inputVoteDeadline" class="col-sm-2 col-form-label">Voting Deadline</label>
         <div class="col-sm-6">
-            <input ngModel type="text" class="form-control" id="inputVoteDeadline" name="voteDeadline">
+            <input ngModel type="number" class="form-control" id="inputVoteDeadline" formControlName="voteDeadline" placeholder="Voting Over Time in minutes">
         </div>
     </div>
     <div class="row mb-3">
         <label for="inputReceipent" class="col-sm-2 col-form-label">Receipent Address</label>
         <div class="col-sm-6">
-            <input ngModel type="text" class="form-control" id="inputReceipent" name="receipent">
+            <input ngModel type="text" class="form-control" id="inputReceipent" formControlName="receipent" placeholder="Wallet Address">
         </div>
     </div>
 
-    <div class="row mb-3">
-
+    <div class="row col-9 mb-3">
         <label for="inputReceipent" class="col-sm-2 col-form-label">Campaign Description</label>
-        <textarea ngModel class="form-control col-sm-6" id="inputReceipent" rows="3" name="description"></textarea>
+        <textarea ngModel style="width: 50%; margin-left:5vw;" id="inputReceipent" rows="3" formControlName="description" placeholder="Description"></textarea>
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>

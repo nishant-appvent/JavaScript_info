@@ -1,0 +1,111 @@
+--
+View All databases
+show dbs
+
+Create a new or switch databases
+use dbName
+
+View current Database
+db
+
+Delete Database
+db.dropDatabase()
+
+
+--MongoDb commands for Collections
+
+To Show Collections
+show collections
+
+Create a collection named 'myCollection'
+db.createCollection("myCollection")
+
+Delete a collection named 'myCollection'
+db.myCollection.drop()
+
+
+--MongoDb commands for rows
+
+Show all Rows in a collections
+db.myCol.find()
+
+Show all Rows in a collections(Prettified)
+db.myCol.find().pretty()
+
+Search in a MongoDb Database
+db.newCol.find({branch:"Mechanical"})
+
+Find first row matching the object in MongoDb databases
+db.newCol.findOne({branch:"Mechanical"})
+
+Insert One Row
+db.newCol.insert({
+    'name':"Tony Stark",
+    'branch':"Mechanical",
+    "alias":'Iron Man'
+})
+
+Insert many Rows
+db.newCol.insertMany([{
+    'name':"Rishabh",
+    'branch':"Mechanical",
+    'language':'C++'
+},
+{
+    'name':'Vivek',
+    "branch":'CS',
+    'language': 'JS',
+    age:22
+}
+])
+
+Limit the number of rows in output
+db.newCol.find().limit(2) 
+
+Count the number of rows in output
+db.newCol.find({branch:"Mechanical"}).count()
+
+Get Sorted data
+db.newCol.find().sort({name:-1})
+// -1 for descending order
+// 1 for ascending order
+
+
+--Update data of the row
+db.newCol.update({name:'Rishabh'},{
+    name:"Rishabh",
+    language:'Java'
+    branch:'Mechanical'
+})
+// Second argument of update is re-assigned so if we want to change only one field of the data-object then previous whole object with one changed field-value should be passed
+---->Solution is "$set"
+
+db.newCol.update({name:'Harry Potter'},{
+    name:"Harry",
+    language:'Parsel Toungue',
+    Skills:'Quiditch'
+},{upsert:true})
+//  upsert:true --> means if data isn't found then insert the data
+
+Mongodb Increment Operator
+db.newCol.update({"name":"Vivek"},
+{ $inc : {
+    age:2
+}})
+
+MongoDb Rename field
+db.newCol.update({"name":"Harry"},
+{ $rename : {
+    Skills:'Sports'
+}})
+
+
+--Delete Row 
+db.newCol.remove({name:'Harry'})
+
+Less than/ Greater than/ Less than or Eq/Greater than or Eq
+db.newCol.find({age:{$lt:20}})
+
+
+
+

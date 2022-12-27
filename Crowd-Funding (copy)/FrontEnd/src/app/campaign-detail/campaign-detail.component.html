@@ -1,23 +1,41 @@
-<div class="card">
-    <h5 class="card-header">Featured</h5>
-    <div class="card" style="width: 18rem;">
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item">Description : {{description}}</li>
-        <li class="list-group-item">Target : {{target}} </li>
-        <li class="list-group-item">RaisedFund : {{raisedFund}}</li>
-        <li class="list-group-item">Funding-Deadline/Voting Start time  : {{fundDeadline}} </li>
-        <li class="list-group-item">Voting-Deadline : {{voteDeadline}} </li>
-        <li class="list-group-item">Receipent : {{receipent}} </li>
-        <li  class="list-group-item"> Minimum Donation :
+<!-- <h4>{{ err }}</h4>
+
+<div class="border border-primary mb-2">
+  <ul>
+    <li class=""><h5>Description : </h5> {{ description }}</li>
+    <li class="">Target : {{ target }}</li>
+    <li class="">RaisedFund : {{ raisedFund }}</li>
+    <li class="">Funding-Deadline/Voting Start time : {{ fundDeadline }}</li>
+    <li class="">Voting-Deadline : {{ voteDeadline }}</li>
+    <li class="">Receipent : {{ receipent }}</li>
+    <li class="">
+      Minimum Donation :
+      <span *ngIf="minimumAmount; else alternateTemp">
+        {{ minimumAmount }} eth
+      </span>
+      <ng-template #alternateTemp><span> --- </span></ng-template>
+    </li>
+    <li class="">Acquired Votes :{{ noOfVoters }}</li>
+  </ul>
+</div> -->
+
+<div class="background mt-3 mb-3">
+  <div class="card">
+      <ul class = "list">
+        <li ><h5>Description : </h5> &nbsp; {{description}}</li>
+        <li ><h5>Target : </h5>&nbsp; {{target}} </li>
+        <li ><h5>RaisedFund : </h5>&nbsp; {{raisedFund}}</li>
+        <li ><h5>Funding ends/Voting starts :  </h5> &nbsp;<countdown [config]="config1"></countdown> </li>
+        <li ><h5>Voting-ends :</h5> &nbsp;<countdown [config]="config2"></countdown> </li>
+        <li ><h5>Receipent : </h5>&nbsp;{{receipent}} </li>
+        <li> <h5>Minimum Donation :</h5>&nbsp;
           <span *ngIf="minimumAmount; else alternateTemp">
            {{minimumAmount}} eth
           </span>
           <ng-template #alternateTemp><span > --- </span></ng-template>
           </li>
-        <li class="list-group-item">Acquired Votes :{{noOfVoters}} </li>
-        <li class="list-group-item">random no : {{random}} </li>
+        <li ><h5>Acquired Votes :&nbsp;</h5>{{noOfVoters}} </li>
       </ul>
     </div>
 </div>
-
 

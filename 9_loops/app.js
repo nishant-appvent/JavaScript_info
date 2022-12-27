@@ -1,22 +1,26 @@
-let n = 9;
-// +(prompt("print prime numbers upto"));
+// const ex = {
+//     one:"afdsjkhs",
+//     two:{
+//         inner:"val"
+//     }
+// }
 
-outer:for(let i = 2; i<=n;i++){
-    for(let j = 2; j<i; j++){
-        if(i%j==0){
-            continue outer;
-        }
-    }
-    console.log(i);
-}
+// const sec = Object.assign({}, ex);;
 
-function ask(question, yes, no) {
-    if (confirm(question)) yes()
-    else no();
-  }
+// sec.two.inner = "newVal";
+// sec.one = "sdkalfjlas"
+
+// console.log("fda",ex);    
+// console.log(sec);  
+"use strict";
+const obj = {
+    prop: 42
+  };
   
-  ask(
-    "Do you agree?",
-    function() { alert("You agreed."); },
-    function() { alert("You canceled the execution."); }
-  );
+  Object.freeze(obj);
+  
+  obj.prop = 33;
+  // Throws an error in strict mode
+  
+  console.log(obj.prop);
+

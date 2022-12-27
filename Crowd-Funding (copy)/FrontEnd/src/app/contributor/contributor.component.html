@@ -1,6 +1,31 @@
-<input type="text" placeholder="" #box1>
-<button type="button" class="btn btn-success" (click)="sendEther(box1.value)">send Ether</button>
-<br>
-<br>
-<button type="button" class="btn btn-info butSpace" (click)="vote()">vote</button>
+<div class="container">
+  <div class="row">
+    <div class="col-6">
+      <input type="number" class="form-control " placeholder="Amount (in Ethers)" #box1 />
+    </div>
+    <div class="col-6">
+      <button
+        type="button"
+        class="btn btn-success"
+        (click)="sendEther(box1.value); box1.value = ''"
+      >
+        Send Ether
+      </button>
+    </div>
+  </div>
 
+  <div class="col-6 text-center pt-2">
+    <button type="button" class="btn btn-info btn-lg butSpace" (click)="vote()">
+      Vote
+    </button>
+  </div>
+</div>
+<div *ngIf="err" class="alert">
+  <span>{{ err }} &nbsp;&nbsp;</span>
+  <img
+    src="../../assets/img/aaa.png"
+    class="icon"
+    alt="Not"
+    (click)="err = ''"
+  />
+</div>
