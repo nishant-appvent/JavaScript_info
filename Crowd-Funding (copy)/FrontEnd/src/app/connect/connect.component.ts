@@ -85,6 +85,7 @@ export class ConnectComponent implements OnInit {
             console.log("Connect to Metamask using connect Button")
           }
         } catch(err:any){
+          this.message = err.message;
           console.log(err.message);
         }
       }

@@ -12,7 +12,7 @@ export class DataTransferServiceService {
   
     getDataStream(){
       return this._dataStream.asObservable();
-    }
+    } 
   
     putDataToStream(data:any){
       this._dataStream.next(data);

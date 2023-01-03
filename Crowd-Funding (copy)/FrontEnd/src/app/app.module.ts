@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+import {  NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -9,6 +9,8 @@ import { ContributorComponent } from './contributor/contributor.component';
 import { CampaignSetterComponent } from './campaign-setter/campaign-setter.component';
 import { FormsModule ,ReactiveFormsModule} from '@angular/forms';
 import { ConnectComponent } from './connect/connect.component';
+import {NgxUiLoaderModule} from 'ngx-ui-loader'
+import { CountdownModule } from 'ngx-countdown';
 
 @NgModule({
   declarations: [
@@ -25,6 +27,8 @@ import { ConnectComponent } from './connect/connect.component';
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
+    NgxUiLoaderModule,
+    CountdownModule
   ],
   providers: [],
   bootstrap: [AppComponent]
