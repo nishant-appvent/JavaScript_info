@@ -2,7 +2,10 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const EmployeeRoutes = require('./routes/EmployeeRoute');
-const AuthRoutes = require('./routes/authRoute')
+const AuthRoutes = require('./routes/authRoute');
+const dotenv = require('dotenv');
+// require("../../nft-Tut/nft-smart-contract/scripts/mintBatch");
+dotenv.config();
 
 mongoose.connect('mongodb://localhost:27017/testdb',{
     useNewUrlParser: true,  

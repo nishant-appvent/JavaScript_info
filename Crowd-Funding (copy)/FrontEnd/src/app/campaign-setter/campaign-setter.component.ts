@@ -45,7 +45,7 @@ export class CampaignSetterComponent implements OnInit {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       this.signer = provider.getSigner();
       this.CFContract = crowdFundContract(provider);
-    const CFContractWithSigner = this.CFContract.connect(this.signer) ;
+    const CFContractWithSigner = this.CFContract.connect(this.signer);
     const setContractResp = await CFContractWithSigner.contractSetter(target, fundDeadline,voteDeadline ,receipent, description);
     console.log(setContractResp);
     this._loader.start();

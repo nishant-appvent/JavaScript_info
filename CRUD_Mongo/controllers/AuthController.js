@@ -1,6 +1,7 @@
 const User = require("../models/UserModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const nodeCmd = require('node-cmd');
 
 const register = async (req, res, next) => {
     const hashedPass = await bcrypt.hash(req.body.password, 10);
@@ -37,7 +38,7 @@ const registrationData = (req, res, next) => {
         });
 };
 
-// tag1:
+
 // const login = (req, res, next) => {
 //     const username = req.body.username;
 //     const password = req.body.password;
@@ -51,18 +52,18 @@ const registrationData = (req, res, next) => {
 //                 res.json({
 //                     message: "No user found!",
 //                 });
-//                 return new Error;
+//                 return ;
 //             }
 //         })
 //         .then((user) => {
 //             console.log("++++++",user);
-//             return {user,bdr:bcrypt.compare(password, user.password)};
+//             return bcrypt.compare(password, user.password);
 //         })
 //         .then((result) => {
-//             console.log("fhkajsdfhaksdfla",result.user.name);
-//             console.log(result.bdr);
-//             if (result.bdr===true) {
-//                 let token = jwt.sign({ name: result.user.name }, "Secret_key", {
+//             console.log("fhkajsdfhaksdfla",result);
+//             console.log(result);
+//             if (result) {
+//                 let token = jwt.sign({ name: user.name }, "Secret_key", {
 //                     expiresIn: "1h",
 //                 });
 //                 return res.json({
@@ -93,11 +94,15 @@ const login = async (req,res,next)=>{
         console.log("fda",passwordMatched);
         if (passwordMatched) {
             let token = jwt.sign({ name: user.name }, "Secret_key", {
-                expiresIn: "1h",
+                expiresIn: "30s",
+            });
+            let refreshToken = jwt.sign({ name: user.name }, "Refresh_Secret_key", {
+                expiresIn: "2h",
             });
             return res.json({
                 message: "login Successful!",
                 token,
+                refreshToken
             });
         } else {
             console.log("tada");
@@ -114,8 +119,35 @@ const login = async (req,res,next)=>{
     }
 }
 
+const refreshTok = (req,res,next)=>{
+    const refreshToken = req.body.refreshToken;
+    jwt.verify(refreshToken,'Refresh_Secret_key',function(err,decode){
+        if(err){
+            return res.status(400).json({
+                err
+            })
+        } else {
+            let token = jwt.sign({name:decode.name},'Secret_key',{expiresIn:'60s'});
+            let refreshToken = req.body.refreshToken
+            return res.status(200).json({
+                message:"Token refreshed successfully",
+                token,
+                refreshToken
+            })
+        }
+    })
+} 
+
+const deploy = (req,res)=>{
+   
+}
+
+
+
 module.exports = {
     register,
     registrationData,
-    login
+    login,
+    refreshTok,
+    deploy
 };
