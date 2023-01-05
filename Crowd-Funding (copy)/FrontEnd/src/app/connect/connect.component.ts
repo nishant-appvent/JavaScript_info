@@ -34,7 +34,6 @@ export class ConnectComponent implements OnInit {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const accounts = await provider.send("eth_requestAccounts",[]);
         this.signer = provider.getSigner();
-
         this.account = accounts[0];
         this.status = "Connected : " + this.account;
         this.message = 'Wallet connected';
@@ -57,11 +56,13 @@ export class ConnectComponent implements OnInit {
       ){
         try{
           const provider = new ethers.providers.Web3Provider(window.ethereum);
+          console.log(provider)
           const accounts = await provider.send("eth_accounts",[]);
           if(accounts.length>0){
             this.signer = provider.getSigner();
             // this.fcContract = faucetContract(provider);
             this.account = accounts[0];
+            await window.ethereum.request();
             if(this.account!==undefined){
               this.status = "Connected : " + this.account;}
             else{
