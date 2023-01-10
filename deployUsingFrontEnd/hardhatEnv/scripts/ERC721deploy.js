@@ -10,8 +10,8 @@ async function main() {
         await erc721Deploy.deployed();
         // console.log(`Contract successfully deployed to : ${erc721Deploy.address}`);
     } catch (error) {
-        console.log("Error in deployment")
-        console.log(`Error: ${err.message}`);
+        // console.log("Error in deployment")
+        console.log(JSON.stringify({err:error.message}));
     }
     
     
@@ -40,16 +40,16 @@ async function main() {
             // console.log(obj);
             console.log(JSON.stringify(obj));
         }
-        ).catch(err=>{
-            console.log(err);
+        ).catch(error=>{
+            console.log(JSON.stringify({err:error.message}));
         })
-    } catch (err) {
-        console.log("Error in minting");
-        console.log(err.message);
+    } catch (error) {
+        // console.log("Error in minting");
+        console.log(JSON.stringify({err:error.message}));
     }
 }
 
 main().catch((error) => {
-    console.error(error);
+    console.log(JSON.stringify({err:"Internal Server Error"}));
     process.exitCode = 1;
 });

@@ -8,28 +8,33 @@ async function main() {
     try {
         // contract deployed
         await erc1155Deploy.deployed();
-        console.log(`Contract successfully deployed to : ${erc1155Deploy.address}`);
+        // console.log(`Contract successfully deployed to : ${erc1155Deploy.address}`);
+        // responseObj['ContractAddress'] = erc1155Deploy.address;
     } catch (error) {
-        console.log("Error in deployment")
-        console.log(`Error: ${err.message}`);
+        // console.log("Error in deployment")
+        console.log(JSON.stringify({err:error.message}));
     }
-
+    
     try {
         const tokenIdArr = [1,2,3];
         const nftAmountArr = [1,1,1];
         const initialRes = await erc1155Deploy.mintBatch(tokenIdArr,nftAmountArr);
-        console.log("NFTs sent for Minting---------->",initialRes);
+        // console.log("NFTs sent for Minting---------->",initialRes);
         const finalResponse = await initialRes.wait();
-        console.log(finalResponse);
-        const finalResponseEvent = finalResponse.events[0];
-        console.log(finalResponseEvent);
-    } catch (err) {
-        console.log("Error in minting");
-        console.log(err.message);
+        // console.log(finalResponse);
+        // const finalResponseEvent = finalResponse.events[0].args[3];
+        const responseObj = {};
+        for (let i = 0; i < tokenIdArr.length; i++) {
+            responseObj[tokenIdArr[i]] = `https://testnets.opensea.io/assets/goerli/${erc1155Deploy.address}/` + tokenIdArr[i];
+        }
+        console.log(JSON.stringify(responseObj));
+    } catch (error) {
+        // console.log("Error in minting");
+        console.log(JSON.stringify({err:error.message}));
     }
 }
 
 main().catch((error) => {
-    console.error(error);
+    console.log(JSON.stringify({err:error.message}));
     process.exitCode = 1;
 });

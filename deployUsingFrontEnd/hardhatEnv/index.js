@@ -8,9 +8,12 @@ const port = process.env.port||8000;
 app.post('/deploy',(req,res)=>{
     try{
         console.log("fdasasdfasfasdfasdfasdfas");
-        nodeCmd.run(`npx hardhat run scripts/ERC721deploy.js --network goerli`,(err,data,stdout)=>{
+        nodeCmd.run(`npx hardhat run scripts/ERC1155deploy.js --network goerli`,(err,data,stdout)=>{
             console.log(data);
             data = JSON.parse(data)
+            if(data.err) {
+                return res.json({message:"Error Occured",data});
+            }
             // console.log(val);
             res.json({message:"Success",data});
         });
