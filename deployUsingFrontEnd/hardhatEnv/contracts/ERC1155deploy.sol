@@ -21,11 +21,5 @@
             _mintBatch(msg.sender, ids, amounts, '');
         }
 
-        // function setURI(string memory _newuri) public onlyOwner {
-        //     _setURI(_newuri);
-        // }
-
-        // function mint(uint256 id, uint256 amount) public onlyOwner {
-        //     _mint(msg.sender, id, amount, '');
-        // }
     }
+        
