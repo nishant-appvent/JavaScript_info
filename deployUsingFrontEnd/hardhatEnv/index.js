@@ -10,7 +10,10 @@ app.post('/deploy',(req,res)=>{
         console.log("fdasasdfasfasdfasdfasdfas");
         nodeCmd.run(`npx hardhat run scripts/ERC1155deploy.js --network goerli`,(err,data,stdout)=>{
             console.log(data);
-            data = JSON.parse(data)
+            data = JSON.parse(data);
+            if(err){
+                return res.json({message:"Some error occured in deployment command."});
+            }
             if(data.err) {
                 return res.json({message:"Error Occured",data});
             }
