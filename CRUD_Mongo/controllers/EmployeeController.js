@@ -1,4 +1,6 @@
 const Employee = require("../models/EmployeeModel");
+const User = require("../models/UserModel");
+
 
 // Show the list of Employees
 const index = (req,res,next) =>{
@@ -59,7 +61,7 @@ const store = (req,res,next) =>{
 // Update an Employee
 const update = (req,res,next) =>{
     let employeeID = req.body.employeeID;
-
+    
     let updateData = {
         name:req.body.name,
         designation:req.body.designation,
@@ -67,7 +69,7 @@ const update = (req,res,next) =>{
         phone:req.body.phone,
         age:req.body.age 
     }
-
+    
     Employee.findByIdAndUpdate(employeeID, {$set:updateData}).then(()=>{
         res.json({
             message:'Employee updated successfully!'
@@ -89,7 +91,35 @@ const destroy = (req,res,next)=>{
     })
 }
 
+const testingTransaction = async (req,res) =>{
+    // console.log(conn);
+    const conn = require("../index");
+    console.log("================",typeof conn.startSession);
+    const session = await conn.startSession();
+    try{
+        session.startTransaction();
+        let employeeName = req.body.name;
+        await Employee.updateOne({name:employeeName},{email:`${employeeName.split(" ")[0]}@gmail.com`},{session});
+        
+        let newUser = new User({
+            name: "Random1",
+            val:"Re",
+            newVa:4132412341234123
+        })
+        console.log("Update Worked");
+        await newUser.save({session});
+        await session.commitTransaction();
+        console.log("Save Worked");
+        res.status(200).json({message:"Email updated"});
+    } catch(err){
+        console.log(err);
+        await session.abortTransaction();
+        res.json({err});
+    }
+    session.endSession();
+}
+
 
 module.exports = {
-    index, show, store, update, destroy
+    index, show, store, update, destroy,testingTransaction
 }

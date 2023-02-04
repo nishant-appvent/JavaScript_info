@@ -7,15 +7,17 @@ const dotenv = require('dotenv');
 // require("../../nft-Tut/nft-smart-contract/scripts/mintBatch");
 dotenv.config();
 
-mongoose.connect('mongodb://localhost:27017/testdb',{
+const cloudDB = "mongodb+srv://nishant_rajput:nishant12345@cluster0.gypxovm.mongodb.net/testDb?retryWrites=true&w=majority";
+const localDb = 'mongodb://localhost:27017/testdb';
+mongoose.connect(cloudDB,{
     useNewUrlParser: true,  
     useUnifiedTopology: true
-  })
+})
 
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error: "));
-db.once("open", function () {
-console.log("Connected successfully");
+const conn = mongoose.connection;
+conn.on("error", console.error.bind(console, "connection error: "));
+conn.once("open", function () {
+    console.log("Connected successfully");
 });
 // create express app
 const app = express();
@@ -31,6 +33,8 @@ app.get('/',(req,res)=>{
 });
 
 
+
+
 // create employee routes
 app.use('/mongo',EmployeeRoutes);
 app.use('/',AuthRoutes);
@@ -40,3 +44,5 @@ app.use('/uploads',express.static('uploads'));
 app.listen(port,()=>{
     console.log(`Express Server is running at port ${port}`);
 });
+
+module.exports = conn;

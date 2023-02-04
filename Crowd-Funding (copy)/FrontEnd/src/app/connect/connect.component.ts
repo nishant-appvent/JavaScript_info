@@ -16,11 +16,10 @@ export class ConnectComponent implements OnInit {
   status="Connect Wallet";
 
   constructor(private cdRef: ChangeDetectorRef){
-     this.getCurrentWalletConnected();
+    this.getCurrentWalletConnected();
   }
-
+  
   ngOnInit(): void {
-      
   }
 
   async connectWallet() {
@@ -56,18 +55,20 @@ export class ConnectComponent implements OnInit {
       ){
         try{
           const provider = new ethers.providers.Web3Provider(window.ethereum);
-          console.log(provider)
+          // console.log(provider)
           const accounts = await provider.send("eth_accounts",[]);
           if(accounts.length>0){
             this.signer = provider.getSigner();
             // this.fcContract = faucetContract(provider);
+            // console.log(accounts);
             this.account = accounts[0];
-            await window.ethereum.request();
+            // await window.ethereum.request();
             if(this.account!==undefined){
               this.status = "Connected : " + this.account;}
             else{
               this.status = "Connect";
             }
+            console.log("---------");
             window.ethereum.on("accountsChanged",(accounts:any)=>{
 
               this.account = accounts[0];

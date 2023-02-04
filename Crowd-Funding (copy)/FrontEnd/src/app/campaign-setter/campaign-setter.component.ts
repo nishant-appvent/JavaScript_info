@@ -56,11 +56,6 @@ export class CampaignSetterComponent implements OnInit {
     catch(err:any){
       this.err = err.reason;
       console.log(err.reason);
-      // alert(err.reason);
-      // for(let i of Object.keys(err)){
-      //   console.log(i);
-      //   console.log(err[i]);
-      // }
     } finally{
       this.subjectService.putDataToStream('true');
       this.setterForm.reset();

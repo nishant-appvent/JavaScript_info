@@ -17,7 +17,8 @@
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.8.1",
     "multer": "^1.4.5-lts.1",
-    "node-cmd": "^5.0.0"
+    "node-cmd": "^5.0.0",
+    "run-rs": "^0.7.7"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"

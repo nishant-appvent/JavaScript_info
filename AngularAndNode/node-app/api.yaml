@@ -1,0 +1,54 @@
+
+swagger: "2.0"
+info:
+  title: Appventurez API collection
+  description : This is general description for Appvent apis
+  contact: 
+    email: random@yopmail.com
+  liscence:
+    name: Apache 2.0
+    url: "http:/apache.org/"
+  servers:
+    -url: "http://localhost:8000"
+    description: This is my local servers 
+    -url: "http://company.com/"
+    description: This is my company server
+
+schemes: [http,https]
+
+paths:
+# Returns a String
+  /string:
+    get: 
+      summary: Returns a String
+      description: It is just returning a fake string.
+      responses:
+        200:
+          description: Success
+        400:
+          description: User Error
+          schema:
+            type: string
+            example: "A fake string"
+        500:
+          description: Internal Server Error
+
+#  Returns an object
+  /user:
+    get: 
+      summary: Returns a single object
+      description: It is just returning a fake object.
+      responses:
+        200:
+          description: Success
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+              message:
+                type: string
+        400:
+          description: User Error
+        500:
+          description: Internal Server Error

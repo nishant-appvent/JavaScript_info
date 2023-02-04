@@ -14,7 +14,7 @@ const userSchema = new Schema({
     password:{
         type:String
     }
-},{timestamps:true});
+},{timestamps:true},{strict:true});
 
 const User = mongoose.model('User',userSchema);
 

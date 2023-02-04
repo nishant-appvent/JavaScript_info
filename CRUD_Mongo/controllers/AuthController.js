@@ -138,9 +138,7 @@ const refreshTok = (req,res,next)=>{
     })
 } 
 
-const deploy = (req,res)=>{
-   
-}
+
 
 
 
@@ -149,5 +147,5 @@ module.exports = {
     registrationData,
     login,
     refreshTok,
-    deploy
+
 };
