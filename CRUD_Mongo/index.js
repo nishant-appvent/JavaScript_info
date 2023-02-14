@@ -7,7 +7,7 @@ const dotenv = require('dotenv');
 // require("../../nft-Tut/nft-smart-contract/scripts/mintBatch");
 dotenv.config();
 
-const cloudDB = "mongodb+srv://nishant_rajput:nishant12345@cluster0.gypxovm.mongodb.net/testDb?retryWrites=true&w=majority";
+const cloudDB = "";
 const localDb = 'mongodb://localhost:27017/testdb';
 mongoose.connect(cloudDB,{
     useNewUrlParser: true,  
